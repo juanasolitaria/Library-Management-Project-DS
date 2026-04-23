@@ -16,7 +16,7 @@ public class DBConnection {
     
     public static Connection getConnection(){
         try {
-            Class.forName("com.mysql.jdbc.Driver"); //this file is inside msql connector 
+            Class.forName("com.mysql.jdbc.Driver"); //java loads mysql driver
             con = DriverManager.getConnection("jdbc:mysql://localhost:3306/library_managament_system","root","");
         } catch (Exception e) {
             e.printStackTrace();

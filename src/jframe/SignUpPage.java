@@ -4,6 +4,7 @@ package jframe;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import javax.swing.JOptionPane;
+ import java.sql.*;
 
 /**
  *
@@ -35,29 +36,77 @@ public class SignUpPage extends javax.swing.JFrame {
         try {
             
             Connection con = DBConnection.getConnection();  
-            String sql = "insert into users(username, password, email, contact) values (?,?,?,?)"; //provides placeholder for each
-            PreparedStatement pst = con.prepareStatement(sql);
+            String sql = "insert into users(username, password, email, contact) values (?,?,?,?)"; //this is the SQL instruction (as if I were writing inside the SQL console but im doing it from here). (?,?,?,?) Provides placeholder for each input
+            PreparedStatement pst = con.prepareStatement(sql);  //takes that instruction and prepares the sql instruction for security (prevents sql injection)
             
             pst.setString(1, username);
             pst.setString(2, password);
-            pst.setString(3, email);                //ig all this rewrites values in variables to create account
+            pst.setString(3, email);                //assignes all placeholders for user inputs
             pst.setString(4, contact);
             
-            int updatedRowCount = pst.executeUpdate(); 
-            con.close();
+            int updatedRowCount = pst.executeUpdate(); //executes the SQL in MySQL 
+            con.close(); //closes the conection 
             
             if (updatedRowCount > 0){
-                JOptionPane.showMessageDialog(this, "Your accoutn was created succesfully!");   //if all values were written inside variables correctly it shows this
-            }
-            else{
-                                JOptionPane.showMessageDialog(this, "There was an error"); //if not there is an error
+                JOptionPane.showMessageDialog(this, "Account created successfully! ✓", "Success",JOptionPane.INFORMATION_MESSAGE); //if all information is inserted -> success
             }
             
         } catch (Exception e) {        //handles errors 
-            e.printStackTrace();       //idk what this is, prints the exception (??
+            e.printStackTrace();       //catches the possible errors and prints it IN THE CONSOLE instead of crashing the program 
         }
         
     }
+    
+    //Validations!:
+    
+public boolean validateSignup(){
+    String username = txt_username.getText();
+    String password = txt_password.getText();
+    String email = txt_email.getText();
+    String contact = txt_contact.getText();
+
+    String errors = "";
+
+    if (username.isEmpty()) errors += "- Username is required\n";
+    if (password.isEmpty()) errors += "- Password is required\n";
+    if (!email.contains("@")) errors += "- Enter a valid email\n";
+    if (!contact.matches("[0-9]+")) errors += "- Contact must be numbers only\n";
+
+    if (!errors.isEmpty()) {
+        JOptionPane.showMessageDialog(this, errors, "Error", JOptionPane.ERROR_MESSAGE);
+        return false;
+    }
+
+    return true;
+}
+
+    //check duplicate users!:
+
+public boolean checkDuplicateusers(){
+    String username = txt_username.getText();   //we will only do for usernames
+    
+    boolean isExist = false;
+    
+    try {
+        Connection con = DBConnection.getConnection(); //SQL connection         
+   
+        PreparedStatement pst = con.prepareStatement("select * from users where username = ?"); //sql instruction
+        pst.setString(1, username); //selecting the placeholder
+        ResultSet rs = pst.executeQuery();
+        if(rs.next() == true){
+            isExist = true; //if isExist is true means the username already exists                                             
+        }
+        else{
+            isExist = false;  
+        }
+        con.close();
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+    
+    return isExist;
+    
+}
 
     // Design Page:
     
@@ -76,7 +125,6 @@ public class SignUpPage extends javax.swing.JFrame {
         jLabel5 = new javax.swing.JLabel();
         jLabel1 = new javax.swing.JLabel();
         jPanel2 = new javax.swing.JPanel();
-        jLabel7 = new javax.swing.JLabel();
         jLabel8 = new javax.swing.JLabel();
         txt_username = new app.bolivia.swing.JCTextField();
         txt_password = new app.bolivia.swing.JCTextField();
@@ -89,9 +137,13 @@ public class SignUpPage extends javax.swing.JFrame {
         jLabel16 = new javax.swing.JLabel();
         button_signup = new javax.swing.JButton();
         jLabel9 = new javax.swing.JLabel();
-        jButton1 = new javax.swing.JButton();
+        button_login = new javax.swing.JButton();
+        jLabel10 = new javax.swing.JLabel();
+        button_minimize = new javax.swing.JButton();
+        button_exit = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setUndecorated(true);
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jPanel1.setBackground(new java.awt.Color(255, 255, 255));
@@ -119,11 +171,6 @@ public class SignUpPage extends javax.swing.JFrame {
         jPanel2.setBackground(new java.awt.Color(51, 51, 51));
         jPanel2.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        jLabel7.setFont(new java.awt.Font("Yu Gothic UI Semibold", 1, 48)); // NOI18N
-        jLabel7.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel7.setText("Sign up ");
-        jPanel2.add(jLabel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(190, 54, 186, 88));
-
         jLabel8.setFont(new java.awt.Font("Yu Gothic UI Light", 0, 12)); // NOI18N
         jLabel8.setForeground(new java.awt.Color(255, 255, 255));
         jLabel8.setText("Create a new acount here");
@@ -131,14 +178,21 @@ public class SignUpPage extends javax.swing.JFrame {
 
         txt_username.setBackground(new java.awt.Color(51, 51, 51));
         txt_username.setBorder(javax.swing.BorderFactory.createMatteBorder(0, 0, 1, 0, new java.awt.Color(255, 255, 255)));
+        txt_username.setForeground(new java.awt.Color(255, 255, 255));
         txt_username.setFont(new java.awt.Font("Microsoft JhengHei UI Light", 0, 18)); // NOI18N
         txt_username.setPhColor(new java.awt.Color(255, 255, 255));
         txt_username.setPlaceholder("Enter Username...");
+        txt_username.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                txt_usernameFocusLost(evt);
+            }
+        });
         txt_username.addActionListener(this::txt_usernameActionPerformed);
         jPanel2.add(txt_username, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 228, 340, -1));
 
         txt_password.setBackground(new java.awt.Color(51, 51, 51));
         txt_password.setBorder(javax.swing.BorderFactory.createMatteBorder(0, 0, 1, 0, new java.awt.Color(255, 255, 255)));
+        txt_password.setForeground(new java.awt.Color(255, 255, 255));
         txt_password.setFont(new java.awt.Font("Microsoft JhengHei UI Light", 0, 18)); // NOI18N
         txt_password.setPhColor(new java.awt.Color(255, 255, 255));
         txt_password.setPlaceholder("Enter Password...");
@@ -152,6 +206,7 @@ public class SignUpPage extends javax.swing.JFrame {
 
         txt_email.setBackground(new java.awt.Color(51, 51, 51));
         txt_email.setBorder(javax.swing.BorderFactory.createMatteBorder(0, 0, 1, 0, new java.awt.Color(255, 255, 255)));
+        txt_email.setForeground(new java.awt.Color(255, 255, 255));
         txt_email.setFont(new java.awt.Font("Microsoft JhengHei UI Light", 0, 18)); // NOI18N
         txt_email.setPhColor(new java.awt.Color(255, 255, 255));
         txt_email.setPlaceholder("Enter email...");
@@ -165,6 +220,7 @@ public class SignUpPage extends javax.swing.JFrame {
 
         txt_contact.setBackground(new java.awt.Color(51, 51, 51));
         txt_contact.setBorder(javax.swing.BorderFactory.createMatteBorder(0, 0, 1, 0, new java.awt.Color(255, 255, 255)));
+        txt_contact.setForeground(new java.awt.Color(255, 255, 255));
         txt_contact.setFont(new java.awt.Font("Microsoft YaHei UI Light", 0, 18)); // NOI18N
         txt_contact.setPhColor(new java.awt.Color(255, 255, 255));
         txt_contact.setPlaceholder("Enter contact...");
@@ -194,25 +250,56 @@ public class SignUpPage extends javax.swing.JFrame {
         jLabel9.setFont(new java.awt.Font("Yu Gothic UI Light", 0, 12)); // NOI18N
         jLabel9.setForeground(new java.awt.Color(255, 255, 255));
         jLabel9.setText("Already have an account? ");
-        jLabel9.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jLabel9MouseClicked(evt);
-            }
-        });
         jPanel2.add(jLabel9, new org.netbeans.lib.awtextra.AbsoluteConstraints(94, 730, 194, 30));
 
-        jButton1.setBackground(new java.awt.Color(51, 51, 51));
-        jButton1.setFont(new java.awt.Font("Yu Gothic UI Light", 0, 12)); // NOI18N
-        jButton1.setForeground(new java.awt.Color(255, 255, 255));
-        jButton1.setText("<html><font color='#a8d4ff'> <u>Log in</u></html>\n");
-        jButton1.setBorderPainted(false);
-        jButton1.setContentAreaFilled(false);
-        jButton1.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-        jPanel2.add(jButton1, new org.netbeans.lib.awtextra.AbsoluteConstraints(206, 730, 66, -1));
+        button_login.setBackground(new java.awt.Color(51, 51, 51));
+        button_login.setFont(new java.awt.Font("Yu Gothic UI Light", 0, 12)); // NOI18N
+        button_login.setForeground(new java.awt.Color(255, 255, 255));
+        button_login.setText("<html><font color='#a8d4ff'> <u>Log in</u></html>\n");
+        button_login.setBorderPainted(false);
+        button_login.setContentAreaFilled(false);
+        button_login.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        jPanel2.add(button_login, new org.netbeans.lib.awtextra.AbsoluteConstraints(206, 730, 66, -1));
+
+        jLabel10.setFont(new java.awt.Font("Yu Gothic UI Semibold", 1, 48)); // NOI18N
+        jLabel10.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel10.setText("Sign up ");
+        jPanel2.add(jLabel10, new org.netbeans.lib.awtextra.AbsoluteConstraints(190, 54, 186, 88));
+
+        button_minimize.setBackground(new java.awt.Color(51, 51, 51));
+        button_minimize.setFont(new java.awt.Font("Yu Gothic UI Semibold", 1, 24)); // NOI18N
+        button_minimize.setForeground(new java.awt.Color(255, 255, 255));
+        button_minimize.setText("-");
+        button_minimize.setBorderPainted(false);
+        button_minimize.setContentAreaFilled(false);
+        button_minimize.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        button_minimize.setFocusPainted(false);
+        button_minimize.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                button_minimizeMouseClicked(evt);
+            }
+        });
+        button_minimize.addActionListener(this::button_minimizeActionPerformed);
+        jPanel2.add(button_minimize, new org.netbeans.lib.awtextra.AbsoluteConstraints(448, 2, 48, 36));
+
+        button_exit.setBackground(new java.awt.Color(51, 51, 51));
+        button_exit.setFont(new java.awt.Font("Yu Gothic UI Semibold", 1, 18)); // NOI18N
+        button_exit.setForeground(new java.awt.Color(255, 255, 255));
+        button_exit.setText("X");
+        button_exit.setBorderPainted(false);
+        button_exit.setContentAreaFilled(false);
+        button_exit.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        button_exit.setFocusPainted(false);
+        button_exit.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                button_exitMouseClicked(evt);
+            }
+        });
+        jPanel2.add(button_exit, new org.netbeans.lib.awtextra.AbsoluteConstraints(478, 2, 50, -1));
 
         getContentPane().add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(990, 0, 530, 830));
 
-        setSize(new java.awt.Dimension(1539, 836));
+        setSize(new java.awt.Dimension(1519, 828));
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
@@ -228,43 +315,51 @@ public class SignUpPage extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_txt_usernameActionPerformed
 
-    private void jLabel9MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel9MouseClicked
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jLabel9MouseClicked
-
     private void button_signupActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_button_signupActionPerformed
-        insertSignupDetails();                                                 //calls the method to insert user information TO sign up
+        if (validateSignup() == true){                                          //when signup button is clicked calls the method to insert user information 
+            if (checkDuplicateusers()== false){                                 //if the username inputted is NOT duplicated (DuplicateUser = false) then create account!
+                insertSignupDetails();                                          //creates account
+            }
+            else{
+            JOptionPane.showMessageDialog(this, "Username already taken.", "Error",JOptionPane.ERROR_MESSAGE); //If  checkDuplicateusers = true throws error
+            }
+        }
     }//GEN-LAST:event_button_signupActionPerformed
+
+    private void button_exitMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_button_exitMouseClicked
+        System.exit(0);
+    }//GEN-LAST:event_button_exitMouseClicked
+
+    private void button_minimizeMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_button_minimizeMouseClicked
+        this.setState(java.awt.Frame.ICONIFIED);
+    }//GEN-LAST:event_button_minimizeMouseClicked
+
+    private void button_minimizeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_button_minimizeActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_button_minimizeActionPerformed
+
+    private void txt_usernameFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_txt_usernameFocusLost
+        if (checkDuplicateusers()== true){
+        JOptionPane.showMessageDialog(this, "Username already taken.");     //duplicate users method
+        }
+    }//GEN-LAST:event_txt_usernameFocusLost
 
     /**
      * @param args the command line arguments
      */
     public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ReflectiveOperationException | javax.swing.UnsupportedLookAndFeelException ex) {
-            logger.log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(() -> new SignUpPage().setVisible(true));
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton button_exit;
+    private javax.swing.JButton button_login;
+    private javax.swing.JButton button_minimize;
     private javax.swing.JButton button_signup;
-    private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel13;
     private javax.swing.JLabel jLabel15;
@@ -273,7 +368,6 @@ public class SignUpPage extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
-    private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel1;
