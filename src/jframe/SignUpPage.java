@@ -1,13 +1,15 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
- */
+
 package jframe;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import javax.swing.JOptionPane;
 
 /**
  *
  * @author juans
  */
+
 public class SignUpPage extends javax.swing.JFrame {
     
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(SignUpPage.class.getName());
@@ -18,7 +20,47 @@ public class SignUpPage extends javax.swing.JFrame {
     public SignUpPage() {
         initComponents();
     }
+   
+    
+    // Conecting to MySQL Database
+    
+    public void insertSignupDetails(){ //this method is used to insert details in the sign up form 
+        String username = txt_username.getText();
+        String password = txt_password.getText();
+        String email = txt_email.getText();
+        String contact = txt_contact.getText();
+        
+        //try and catch (users might input errors)
+        //connect to database
+        try {
+            
+            Connection con = DBConnection.getConnection();  
+            String sql = "insert into users(username, password, email, contact) values (?,?,?,?)"; //provides placeholder for each
+            PreparedStatement pst = con.prepareStatement(sql);
+            
+            pst.setString(1, username);
+            pst.setString(2, password);
+            pst.setString(3, email);                //ig all this rewrites values in variables to create account
+            pst.setString(4, contact);
+            
+            int updatedRowCount = pst.executeUpdate(); 
+            con.close();
+            
+            if (updatedRowCount > 0){
+                JOptionPane.showMessageDialog(this, "Your accoutn was created succesfully!");   //if all values were written inside variables correctly it shows this
+            }
+            else{
+                                JOptionPane.showMessageDialog(this, "There was an error"); //if not there is an error
+            }
+            
+        } catch (Exception e) {        //handles errors 
+            e.printStackTrace();       //idk what this is, prints the exception (??
+        }
+        
+    }
 
+    // Design Page:
+    
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -34,20 +76,20 @@ public class SignUpPage extends javax.swing.JFrame {
         jLabel5 = new javax.swing.JLabel();
         jLabel1 = new javax.swing.JLabel();
         jPanel2 = new javax.swing.JPanel();
-        jLabel6 = new javax.swing.JLabel();
         jLabel7 = new javax.swing.JLabel();
         jLabel8 = new javax.swing.JLabel();
-        jCTextField1 = new app.bolivia.swing.JCTextField();
-        jLabel9 = new javax.swing.JLabel();
-        jLabel10 = new javax.swing.JLabel();
-        jCTextField2 = new app.bolivia.swing.JCTextField();
+        txt_username = new app.bolivia.swing.JCTextField();
+        txt_password = new app.bolivia.swing.JCTextField();
         jLabel11 = new javax.swing.JLabel();
-        jLabel12 = new javax.swing.JLabel();
-        jCTextField3 = new app.bolivia.swing.JCTextField();
+        txt_email = new app.bolivia.swing.JCTextField();
         jLabel13 = new javax.swing.JLabel();
-        jLabel14 = new javax.swing.JLabel();
-        jCTextField4 = new app.bolivia.swing.JCTextField();
+        txt_contact = new app.bolivia.swing.JCTextField();
         jLabel15 = new javax.swing.JLabel();
+        jLabel4 = new javax.swing.JLabel();
+        jLabel16 = new javax.swing.JLabel();
+        button_signup = new javax.swing.JButton();
+        jLabel9 = new javax.swing.JLabel();
+        jButton1 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
@@ -55,102 +97,118 @@ public class SignUpPage extends javax.swing.JFrame {
         jPanel1.setBackground(new java.awt.Color(255, 255, 255));
         jPanel1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        jLabel2.setFont(new java.awt.Font("Yu Gothic Medium", 1, 18)); // NOI18N
+        jLabel2.setFont(new java.awt.Font("Yu Gothic UI Semibold", 1, 24)); // NOI18N
         jLabel2.setForeground(new java.awt.Color(0, 0, 0));
         jLabel2.setText("Advanced Library Management System");
-        jPanel1.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(280, 150, 350, 40));
+        jPanel1.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(280, 150, 474, 40));
 
-        jLabel3.setFont(new java.awt.Font("Yu Gothic Medium", 1, 18)); // NOI18N
+        jLabel3.setFont(new java.awt.Font("Yu Gothic Medium", 0, 18)); // NOI18N
         jLabel3.setText("Juan Rincon Dev");
-        jPanel1.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 150, 40));
+        jPanel1.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(4, 0, 150, 40));
 
-        jLabel5.setFont(new java.awt.Font("Yu Gothic Medium", 1, 18)); // NOI18N
+        jLabel5.setFont(new java.awt.Font("Yu Gothic UI Semibold", 1, 24)); // NOI18N
         jLabel5.setForeground(new java.awt.Color(0, 0, 0));
         jLabel5.setText("Welcome To");
-        jPanel1.add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(280, 110, 120, 40));
+        jPanel1.add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(280, 110, 244, 40));
 
         jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/signup-library-icon.png"))); // NOI18N
         jPanel1.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 220, 770, 600));
 
         getContentPane().add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 990, 830));
 
-        jPanel2.setBackground(new java.awt.Color(102, 153, 255));
+        jPanel2.setBackground(new java.awt.Color(51, 51, 51));
         jPanel2.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        jLabel6.setFont(new java.awt.Font("Yu Gothic Light", 1, 20)); // NOI18N
-        jLabel6.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel6.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/icons8_Account_50px.png"))); // NOI18N
-        jPanel2.add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 220, 60, 60));
-
-        jLabel7.setFont(new java.awt.Font("Yu Gothic Medium", 1, 25)); // NOI18N
+        jLabel7.setFont(new java.awt.Font("Yu Gothic UI Semibold", 1, 48)); // NOI18N
         jLabel7.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel7.setText("Signup Page");
-        jPanel2.add(jLabel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(210, 50, 160, 40));
+        jLabel7.setText("Sign up ");
+        jPanel2.add(jLabel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(190, 54, 186, 88));
 
-        jLabel8.setFont(new java.awt.Font("Yu Gothic Light", 1, 20)); // NOI18N
+        jLabel8.setFont(new java.awt.Font("Yu Gothic UI Light", 0, 12)); // NOI18N
         jLabel8.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel8.setText("Create New Account");
-        jPanel2.add(jLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(200, 90, 220, 30));
+        jLabel8.setText("Create a new acount here");
+        jPanel2.add(jLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(208, 138, 166, 30));
 
-        jCTextField1.setBackground(new java.awt.Color(102, 153, 255));
-        jCTextField1.setBorder(javax.swing.BorderFactory.createMatteBorder(0, 0, 2, 0, new java.awt.Color(255, 255, 255)));
-        jCTextField1.setText("Enter Username");
-        jCTextField1.setPlaceholder("Enter Username");
-        jPanel2.add(jCTextField1, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 240, -1, -1));
+        txt_username.setBackground(new java.awt.Color(51, 51, 51));
+        txt_username.setBorder(javax.swing.BorderFactory.createMatteBorder(0, 0, 1, 0, new java.awt.Color(255, 255, 255)));
+        txt_username.setFont(new java.awt.Font("Microsoft JhengHei UI Light", 0, 18)); // NOI18N
+        txt_username.setPhColor(new java.awt.Color(255, 255, 255));
+        txt_username.setPlaceholder("Enter Username...");
+        txt_username.addActionListener(this::txt_usernameActionPerformed);
+        jPanel2.add(txt_username, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 228, 340, -1));
 
-        jLabel9.setFont(new java.awt.Font("Yu Gothic Light", 1, 20)); // NOI18N
-        jLabel9.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel9.setText("Username");
-        jPanel2.add(jLabel9, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 200, 130, 40));
-
-        jLabel10.setFont(new java.awt.Font("Yu Gothic Light", 1, 20)); // NOI18N
-        jLabel10.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel10.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/icons8_Account_50px.png"))); // NOI18N
-        jPanel2.add(jLabel10, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 330, 60, 60));
-
-        jCTextField2.setBackground(new java.awt.Color(102, 153, 255));
-        jCTextField2.setBorder(javax.swing.BorderFactory.createMatteBorder(0, 0, 2, 0, new java.awt.Color(255, 255, 255)));
-        jCTextField2.setText("Enter Password ...");
-        jCTextField2.setPlaceholder("Enter Password");
-        jPanel2.add(jCTextField2, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 350, -1, -1));
+        txt_password.setBackground(new java.awt.Color(51, 51, 51));
+        txt_password.setBorder(javax.swing.BorderFactory.createMatteBorder(0, 0, 1, 0, new java.awt.Color(255, 255, 255)));
+        txt_password.setFont(new java.awt.Font("Microsoft JhengHei UI Light", 0, 18)); // NOI18N
+        txt_password.setPhColor(new java.awt.Color(255, 255, 255));
+        txt_password.setPlaceholder("Enter Password...");
+        txt_password.addActionListener(this::txt_passwordActionPerformed);
+        jPanel2.add(txt_password, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 350, 340, -1));
 
         jLabel11.setFont(new java.awt.Font("Yu Gothic Light", 1, 20)); // NOI18N
         jLabel11.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel11.setText("Password");
-        jPanel2.add(jLabel11, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 310, 130, 40));
+        jLabel11.setText("Username");
+        jPanel2.add(jLabel11, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 180, 130, 40));
 
-        jLabel12.setFont(new java.awt.Font("Yu Gothic Light", 1, 20)); // NOI18N
-        jLabel12.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel12.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/icons8_Account_50px.png"))); // NOI18N
-        jPanel2.add(jLabel12, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 460, 60, 60));
-
-        jCTextField3.setBackground(new java.awt.Color(102, 153, 255));
-        jCTextField3.setBorder(javax.swing.BorderFactory.createMatteBorder(0, 0, 2, 0, new java.awt.Color(255, 255, 255)));
-        jCTextField3.setText("Enter Username");
-        jCTextField3.setPlaceholder("Enter Username");
-        jCTextField3.addActionListener(this::jCTextField3ActionPerformed);
-        jPanel2.add(jCTextField3, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 480, -1, -1));
+        txt_email.setBackground(new java.awt.Color(51, 51, 51));
+        txt_email.setBorder(javax.swing.BorderFactory.createMatteBorder(0, 0, 1, 0, new java.awt.Color(255, 255, 255)));
+        txt_email.setFont(new java.awt.Font("Microsoft JhengHei UI Light", 0, 18)); // NOI18N
+        txt_email.setPhColor(new java.awt.Color(255, 255, 255));
+        txt_email.setPlaceholder("Enter email...");
+        txt_email.addActionListener(this::txt_emailActionPerformed);
+        jPanel2.add(txt_email, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 480, 340, -1));
 
         jLabel13.setFont(new java.awt.Font("Yu Gothic Light", 1, 20)); // NOI18N
         jLabel13.setForeground(new java.awt.Color(255, 255, 255));
         jLabel13.setText("Email");
-        jPanel2.add(jLabel13, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 440, 130, 40));
+        jPanel2.add(jLabel13, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 440, 130, 40));
 
-        jLabel14.setFont(new java.awt.Font("Yu Gothic Light", 1, 20)); // NOI18N
-        jLabel14.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel14.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/icons8_Account_50px.png"))); // NOI18N
-        jPanel2.add(jLabel14, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 590, 60, 60));
-
-        jCTextField4.setBackground(new java.awt.Color(102, 153, 255));
-        jCTextField4.setBorder(javax.swing.BorderFactory.createMatteBorder(0, 0, 2, 0, new java.awt.Color(255, 255, 255)));
-        jCTextField4.setText("Enter Username");
-        jCTextField4.setPlaceholder("Enter Username");
-        jPanel2.add(jCTextField4, new org.netbeans.lib.awtextra.AbsoluteConstraints(130, 610, -1, -1));
+        txt_contact.setBackground(new java.awt.Color(51, 51, 51));
+        txt_contact.setBorder(javax.swing.BorderFactory.createMatteBorder(0, 0, 1, 0, new java.awt.Color(255, 255, 255)));
+        txt_contact.setFont(new java.awt.Font("Microsoft YaHei UI Light", 0, 18)); // NOI18N
+        txt_contact.setPhColor(new java.awt.Color(255, 255, 255));
+        txt_contact.setPlaceholder("Enter contact...");
+        jPanel2.add(txt_contact, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 610, 340, -1));
 
         jLabel15.setFont(new java.awt.Font("Yu Gothic Light", 1, 20)); // NOI18N
         jLabel15.setForeground(new java.awt.Color(255, 255, 255));
         jLabel15.setText("Contact");
-        jPanel2.add(jLabel15, new org.netbeans.lib.awtextra.AbsoluteConstraints(130, 570, 130, 40));
+        jPanel2.add(jLabel15, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 570, 130, 40));
+
+        jLabel4.setFont(new java.awt.Font("Segoe UI", 0, 24)); // NOI18N
+        jLabel4.setText("CAMI IS MY ENGINE");
+        jPanel2.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(312, 786, 220, 50));
+
+        jLabel16.setFont(new java.awt.Font("Yu Gothic Light", 1, 20)); // NOI18N
+        jLabel16.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel16.setText("Password");
+        jPanel2.add(jLabel16, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 310, 130, 40));
+
+        button_signup.setBackground(new java.awt.Color(204, 204, 204));
+        button_signup.setFont(new java.awt.Font("Yu Gothic UI Semibold", 0, 12)); // NOI18N
+        button_signup.setForeground(new java.awt.Color(0, 0, 0));
+        button_signup.setText("SIGN UP");
+        button_signup.addActionListener(this::button_signupActionPerformed);
+        jPanel2.add(button_signup, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 685, 340, 44));
+
+        jLabel9.setFont(new java.awt.Font("Yu Gothic UI Light", 0, 12)); // NOI18N
+        jLabel9.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel9.setText("Already have an account? ");
+        jLabel9.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jLabel9MouseClicked(evt);
+            }
+        });
+        jPanel2.add(jLabel9, new org.netbeans.lib.awtextra.AbsoluteConstraints(94, 730, 194, 30));
+
+        jButton1.setBackground(new java.awt.Color(51, 51, 51));
+        jButton1.setFont(new java.awt.Font("Yu Gothic UI Light", 0, 12)); // NOI18N
+        jButton1.setForeground(new java.awt.Color(255, 255, 255));
+        jButton1.setText("<html><font color='#a8d4ff'> <u>Log in</u></html>\n");
+        jButton1.setBorderPainted(false);
+        jButton1.setContentAreaFilled(false);
+        jButton1.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        jPanel2.add(jButton1, new org.netbeans.lib.awtextra.AbsoluteConstraints(206, 730, 66, -1));
 
         getContentPane().add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(990, 0, 530, 830));
 
@@ -158,9 +216,25 @@ public class SignUpPage extends javax.swing.JFrame {
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jCTextField3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCTextField3ActionPerformed
+    private void txt_emailActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txt_emailActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jCTextField3ActionPerformed
+    }//GEN-LAST:event_txt_emailActionPerformed
+
+    private void txt_passwordActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txt_passwordActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txt_passwordActionPerformed
+
+    private void txt_usernameActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txt_usernameActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txt_usernameActionPerformed
+
+    private void jLabel9MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel9MouseClicked
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jLabel9MouseClicked
+
+    private void button_signupActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_button_signupActionPerformed
+        insertSignupDetails();                                                 //calls the method to insert user information TO sign up
+    }//GEN-LAST:event_button_signupActionPerformed
 
     /**
      * @param args the command line arguments
@@ -188,25 +262,25 @@ public class SignUpPage extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private app.bolivia.swing.JCTextField jCTextField1;
-    private app.bolivia.swing.JCTextField jCTextField2;
-    private app.bolivia.swing.JCTextField jCTextField3;
-    private app.bolivia.swing.JCTextField jCTextField4;
+    private javax.swing.JButton button_signup;
+    private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
-    private javax.swing.JLabel jLabel12;
     private javax.swing.JLabel jLabel13;
-    private javax.swing.JLabel jLabel14;
     private javax.swing.JLabel jLabel15;
+    private javax.swing.JLabel jLabel16;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
-    private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
+    private app.bolivia.swing.JCTextField txt_contact;
+    private app.bolivia.swing.JCTextField txt_email;
+    private app.bolivia.swing.JCTextField txt_password;
+    private app.bolivia.swing.JCTextField txt_username;
     // End of variables declaration//GEN-END:variables
 }
