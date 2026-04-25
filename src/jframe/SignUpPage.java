@@ -188,7 +188,7 @@ public boolean checkDuplicateusers(){
             }
         });
         txt_username.addActionListener(this::txt_usernameActionPerformed);
-        jPanel2.add(txt_username, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 228, 340, -1));
+        jPanel2.add(txt_username, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 220, 340, -1));
 
         txt_password.setBackground(new java.awt.Color(51, 51, 51));
         txt_password.setBorder(javax.swing.BorderFactory.createMatteBorder(0, 0, 1, 0, new java.awt.Color(255, 255, 255)));
@@ -327,11 +327,11 @@ public boolean checkDuplicateusers(){
     }//GEN-LAST:event_button_signupActionPerformed
 
     private void button_exitMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_button_exitMouseClicked
-        System.exit(0);
+        System.exit(0);                                                         //exit button
     }//GEN-LAST:event_button_exitMouseClicked
 
     private void button_minimizeMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_button_minimizeMouseClicked
-        this.setState(java.awt.Frame.ICONIFIED);
+        this.setState(java.awt.Frame.ICONIFIED);                                //minimize button
     }//GEN-LAST:event_button_minimizeMouseClicked
 
     private void button_minimizeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_button_minimizeActionPerformed
