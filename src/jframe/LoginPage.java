@@ -199,7 +199,6 @@ public class LoginPage extends javax.swing.JFrame {
         button_exit.setBorderPainted(false);
         button_exit.setContentAreaFilled(false);
         button_exit.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-        button_exit.setFocusPainted(false);
         button_exit.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 button_exitMouseClicked(evt);
@@ -210,7 +209,7 @@ public class LoginPage extends javax.swing.JFrame {
         jLabel12.setFont(new java.awt.Font("Yu Gothic UI Light", 0, 14)); // NOI18N
         jLabel12.setForeground(new java.awt.Color(255, 255, 255));
         jLabel12.setText("Don't have an account?");
-        jPanel2.add(jLabel12, new org.netbeans.lib.awtextra.AbsoluteConstraints(94, 662, 260, 30));
+        jPanel2.add(jLabel12, new org.netbeans.lib.awtextra.AbsoluteConstraints(94, 662, 146, 30));
 
         button_createaccount.setBackground(new java.awt.Color(51, 51, 51));
         button_createaccount.setFont(new java.awt.Font("Yu Gothic UI Light", 0, 14)); // NOI18N
@@ -219,6 +218,11 @@ public class LoginPage extends javax.swing.JFrame {
         button_createaccount.setBorderPainted(false);
         button_createaccount.setContentAreaFilled(false);
         button_createaccount.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        button_createaccount.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                button_createaccountMouseClicked(evt);
+            }
+        });
         jPanel2.add(button_createaccount, new org.netbeans.lib.awtextra.AbsoluteConstraints(194, 662, 188, -1));
 
         button_LogIn.setBackground(new java.awt.Color(204, 204, 204));
@@ -263,6 +267,12 @@ public class LoginPage extends javax.swing.JFrame {
             logIn();
         }
     }//GEN-LAST:event_button_LogInActionPerformed
+
+    private void button_createaccountMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_button_createaccountMouseClicked
+        SignUpPage sign = new SignUpPage();
+                sign.setVisible(true);
+                this.dispose();                                                 //redirects to signup page
+    }//GEN-LAST:event_button_createaccountMouseClicked
 
     /**
      * @param args the command line arguments

@@ -20,6 +20,7 @@ public class SignUpPage extends javax.swing.JFrame {
      */
     public SignUpPage() {
         initComponents();
+        button_login.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
     }
    
     
@@ -174,7 +175,7 @@ public boolean checkDuplicateusers(){
         jLabel8.setFont(new java.awt.Font("Yu Gothic UI Light", 0, 12)); // NOI18N
         jLabel8.setForeground(new java.awt.Color(255, 255, 255));
         jLabel8.setText("Create a new acount here");
-        jPanel2.add(jLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(208, 138, 166, 30));
+        jPanel2.add(jLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(210, 128, 166, 30));
 
         txt_username.setBackground(new java.awt.Color(51, 51, 51));
         txt_username.setBorder(javax.swing.BorderFactory.createMatteBorder(0, 0, 1, 0, new java.awt.Color(255, 255, 255)));
@@ -245,12 +246,12 @@ public boolean checkDuplicateusers(){
         button_signup.setForeground(new java.awt.Color(0, 0, 0));
         button_signup.setText("SIGN UP");
         button_signup.addActionListener(this::button_signupActionPerformed);
-        jPanel2.add(button_signup, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 685, 340, 44));
+        jPanel2.add(button_signup, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 680, 340, 44));
 
         jLabel9.setFont(new java.awt.Font("Yu Gothic UI Light", 0, 12)); // NOI18N
         jLabel9.setForeground(new java.awt.Color(255, 255, 255));
         jLabel9.setText("Already have an account? ");
-        jPanel2.add(jLabel9, new org.netbeans.lib.awtextra.AbsoluteConstraints(94, 730, 194, 30));
+        jPanel2.add(jLabel9, new org.netbeans.lib.awtextra.AbsoluteConstraints(96, 734, 132, 30));
 
         button_login.setBackground(new java.awt.Color(51, 51, 51));
         button_login.setFont(new java.awt.Font("Yu Gothic UI Light", 0, 12)); // NOI18N
@@ -259,12 +260,17 @@ public boolean checkDuplicateusers(){
         button_login.setBorderPainted(false);
         button_login.setContentAreaFilled(false);
         button_login.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-        jPanel2.add(button_login, new org.netbeans.lib.awtextra.AbsoluteConstraints(206, 730, 66, -1));
+        button_login.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                button_loginMouseClicked(evt);
+            }
+        });
+        jPanel2.add(button_login, new org.netbeans.lib.awtextra.AbsoluteConstraints(208, 734, 66, -1));
 
         jLabel10.setFont(new java.awt.Font("Yu Gothic UI Semibold", 1, 48)); // NOI18N
         jLabel10.setForeground(new java.awt.Color(255, 255, 255));
         jLabel10.setText("Sign up ");
-        jPanel2.add(jLabel10, new org.netbeans.lib.awtextra.AbsoluteConstraints(190, 54, 186, 88));
+        jPanel2.add(jLabel10, new org.netbeans.lib.awtextra.AbsoluteConstraints(192, 44, 186, 88));
 
         button_minimize.setBackground(new java.awt.Color(51, 51, 51));
         button_minimize.setFont(new java.awt.Font("Yu Gothic UI Semibold", 1, 24)); // NOI18N
@@ -319,6 +325,10 @@ public boolean checkDuplicateusers(){
         if (validateSignup() == true){                                          //when signup button is clicked calls the method to insert user information 
             if (checkDuplicateusers()== false){                                 //if the username inputted is NOT duplicated (DuplicateUser = false) then create account!
                 insertSignupDetails();                                          //creates account
+                
+                LoginPage login = new LoginPage();
+                login.setVisible(true);                                         //redirects to login page
+                this.dispose(); 
             }
             else{
             JOptionPane.showMessageDialog(this, "Username already taken.", "Error",JOptionPane.ERROR_MESSAGE); //If  checkDuplicateusers = true throws error
@@ -340,9 +350,15 @@ public boolean checkDuplicateusers(){
 
     private void txt_usernameFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_txt_usernameFocusLost
         if (checkDuplicateusers()== true){
-        JOptionPane.showMessageDialog(this, "Username already taken.");     //duplicate users method
+        JOptionPane.showMessageDialog(this, "Username already taken.");          //duplicate users method
         }
     }//GEN-LAST:event_txt_usernameFocusLost
+
+    private void button_loginMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_button_loginMouseClicked
+                LoginPage login = new LoginPage();
+                login.setVisible(true);                                         //redirects to login page
+                this.dispose();                                                  
+    }//GEN-LAST:event_button_loginMouseClicked
 
     /**
      * @param args the command line arguments

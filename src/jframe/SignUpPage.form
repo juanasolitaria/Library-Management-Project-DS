@@ -130,7 +130,7 @@
           </Properties>
           <Constraints>
             <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout" value="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout$AbsoluteConstraintsDescription">
-              <AbsoluteConstraints x="208" y="138" width="166" height="30"/>
+              <AbsoluteConstraints x="210" y="128" width="166" height="30"/>
             </Constraint>
           </Constraints>
         </Component>
@@ -355,7 +355,7 @@
           </Events>
           <Constraints>
             <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout" value="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout$AbsoluteConstraintsDescription">
-              <AbsoluteConstraints x="90" y="685" width="340" height="44"/>
+              <AbsoluteConstraints x="90" y="680" width="340" height="44"/>
             </Constraint>
           </Constraints>
         </Component>
@@ -371,7 +371,7 @@
           </Properties>
           <Constraints>
             <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout" value="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout$AbsoluteConstraintsDescription">
-              <AbsoluteConstraints x="94" y="730" width="194" height="30"/>
+              <AbsoluteConstraints x="96" y="734" width="132" height="30"/>
             </Constraint>
           </Constraints>
         </Component>
@@ -393,9 +393,12 @@
               <Color id="Hand Cursor"/>
             </Property>
           </Properties>
+          <Events>
+            <EventHandler event="mouseClicked" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="button_loginMouseClicked"/>
+          </Events>
           <Constraints>
             <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout" value="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout$AbsoluteConstraintsDescription">
-              <AbsoluteConstraints x="206" y="730" width="66" height="-1"/>
+              <AbsoluteConstraints x="208" y="734" width="66" height="-1"/>
             </Constraint>
           </Constraints>
         </Component>
@@ -411,7 +414,7 @@
           </Properties>
           <Constraints>
             <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout" value="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout$AbsoluteConstraintsDescription">
-              <AbsoluteConstraints x="190" y="54" width="186" height="88"/>
+              <AbsoluteConstraints x="192" y="44" width="186" height="88"/>
             </Constraint>
           </Constraints>
         </Component>
