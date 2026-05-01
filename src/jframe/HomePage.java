@@ -4,13 +4,11 @@ package jframe;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
-import org.jfree.chart.plot.CategoryPlot;
-import org.jfree.chart.plot.PlotOrientation;
-import org.jfree.chart.renderer.category.BarRenderer;
-import org.jfree.data.category.DefaultCategoryDataset;
 import java.awt.Color;
 import java.awt.BorderLayout;
-import org.jfree.chart.renderer.category.StandardBarPainter;
+import org.jfree.chart.plot.RingPlot;
+import org.jfree.data.general.DefaultPieDataset;
+import javax.swing.JLabel;
 
 /**
  *
@@ -25,14 +23,98 @@ public class HomePage extends javax.swing.JFrame {
      */
     public HomePage() {
         initComponents();
-        panelBarChart.setLayout(new BorderLayout());
-        showBarChart();
-        jScrollPane1.getVerticalScrollBar().setPreferredSize(new java.awt.Dimension(0, 0));
+        showPieChart.setLayout(new BorderLayout());
+        showPieChart();                                                                         //calling the piechart method
+        updateLegend();                                                                       
+        jScrollPane1.getVerticalScrollBar().setPreferredSize(new java.awt.Dimension(0, 0));     //to scroll on homepage tables
         jScrollPane2.getVerticalScrollBar().setPreferredSize(new java.awt.Dimension(0, 0));
     }
     
-    //barchart design
+public void showPieChart(){                                                                    //piechart method (STATIC FOR NOW)
     
+    DefaultPieDataset dataset = new DefaultPieDataset();
+    dataset.setValue("Available Books", 45.0);
+    dataset.setValue("Issued Books", 30.0);
+    dataset.setValue("Overdue Books", 15.0);
+    dataset.setValue("Lost Books", 10.0);
+    
+    JFreeChart pieChart = ChartFactory.createRingChart(
+        "",           // sin titulo
+        dataset,
+        false,        // sin leyenda arriba
+        true,
+        false
+    );
+    
+    RingPlot plot = (RingPlot) pieChart.getPlot();
+    
+    // fondo limpio
+    pieChart.setBackgroundPaint(new Color(246,242,242));
+    plot.setBackgroundPaint(new Color(246,242,242));                                
+    plot.setOutlinePaint(new Color(246,242,242));
+    plot.setShadowPaint(null);
+    plot.setSectionDepth(0.50); // grosor del anillo
+    
+    // colores bonitos como en el ejemplo
+    plot.setSectionPaint("Available Books", new Color(72, 199, 173));   // teal
+    plot.setSectionPaint("Issued Books", new Color(255, 107, 139));     // rosa
+    plot.setSectionPaint("Overdue Books", new Color(149, 117, 205));    // morado
+    plot.setSectionPaint("Lost Books", new Color(100, 181, 246));       // azul
+    
+    // quitar bordes entre secciones
+    plot.setBaseSectionOutlinePaint(new Color(204, 204, 204));
+    plot.setBaseSectionOutlineStroke(new java.awt.BasicStroke(0f));
+    
+    // quitar labels del chart
+    plot.setLabelGenerator(null);
+    
+    ChartPanel chartPanel = new ChartPanel(pieChart);
+    chartPanel.setBackground(new Color(204, 204, 204));
+    showPieChart.removeAll();
+    showPieChart.add(chartPanel, BorderLayout.CENTER);
+    showPieChart.validate();
+}
+
+
+public void updateLegend(){                                                                 //method for tags (STATIC FOR NOW)
+    panelLegend.removeAll();
+    panelLegend.setLayout(null);
+    
+    String[] names = {"Available Books", "Issued Books", "Overdue Books", "Lost Books"};
+    Color[] colors = {
+        new Color(72, 199, 173),
+        new Color(255, 107, 139),
+        new Color(149, 117, 205),
+        new Color(100, 181, 246)
+    };
+    double total = 45.0 + 30.0 + 15.0 + 10.0;
+    double[] values = {45.0, 30.0, 15.0, 10.0};
+    
+    for(int i = 0; i < names.length; i++){
+        // cuadrito de color
+        JLabel colorBox = new JLabel();
+        colorBox.setBackground(colors[i]);
+        colorBox.setOpaque(true);
+        colorBox.setBounds(10, i * 40 + 10, 14, 14);
+        
+        // texto con porcentaje
+        int percent = (int)((values[i] / total) * 100);
+        JLabel text = new JLabel(names[i] + "   " + percent + "%");
+        text.setFont(new java.awt.Font("Yu Gothic UI Light", 0, 12));
+        text.setBounds(30, i * 40 + 5, 200, 24);
+        
+        panelLegend.add(colorBox);
+        panelLegend.add(text);
+    }
+    
+    panelLegend.revalidate();
+    panelLegend.repaint();
+}
+    
+    
+    //barchart design:
+    
+    /** 
 public void showBarChart(){
     
     DefaultCategoryDataset barDataset = new DefaultCategoryDataset();
@@ -43,8 +125,8 @@ public void showBarChart(){
     
     JFreeChart barChart = ChartFactory.createBarChart(
         "Books Issued Per Month",
-        "Month",
-        "Books",
+        "",
+        "",
         barDataset,
         PlotOrientation.VERTICAL,
         false,
@@ -59,12 +141,16 @@ public void showBarChart(){
     plot.setBackgroundPaint(new Color(204, 204, 204));
     plot.setOutlineVisible(false);
     
+    //sets the month names with the font
+    plot.getDomainAxis().setTickLabelFont(new java.awt.Font("Yu Gothic UI Semibold", 1, 11));
+    
     // grid sutil
     plot.setRangeGridlinesVisible(true);
-    plot.setRangeGridlinePaint(new Color(180, 180, 180));
+    plot.setRangeGridlinePaint(new Color(102, 102, 102));
     plot.setDomainGridlinesVisible(false);
     
-    //titulo
+    
+    //title font
     barChart.getTitle().setFont(new java.awt.Font("Yu Gothic UI Semibold", 0, 13));
     barChart.getTitle().setPaint(new Color(51, 51, 51));    
     
@@ -97,6 +183,9 @@ public void showBarChart(){
     panelBarChart.add(chartPanel, BorderLayout.CENTER);
     panelBarChart.validate();
 }
+*/
+ 
+
     
 
     /**
@@ -119,22 +208,30 @@ public void showBarChart(){
         jLabel16 = new javax.swing.JLabel();
         jPanel12 = new javax.swing.JPanel();
         jLabel15 = new javax.swing.JLabel();
+        jLabel32 = new javax.swing.JLabel();
         jPanel11 = new javax.swing.JPanel();
         jLabel14 = new javax.swing.JLabel();
+        jLabel31 = new javax.swing.JLabel();
         jPanel10 = new javax.swing.JPanel();
         jLabel13 = new javax.swing.JLabel();
+        jLabel30 = new javax.swing.JLabel();
         jPanel9 = new javax.swing.JPanel();
         jLabel12 = new javax.swing.JLabel();
+        jLabel29 = new javax.swing.JLabel();
         jPanel8 = new javax.swing.JPanel();
         jLabel11 = new javax.swing.JLabel();
+        jLabel28 = new javax.swing.JLabel();
         jPanel7 = new javax.swing.JPanel();
         jLabel10 = new javax.swing.JLabel();
+        jLabel8 = new javax.swing.JLabel();
         jPanel6 = new javax.swing.JPanel();
         jLabel9 = new javax.swing.JLabel();
+        jLabel7 = new javax.swing.JLabel();
         jPanel5 = new javax.swing.JPanel();
         jLabel6 = new javax.swing.JLabel();
-        jPanel4 = new javax.swing.JPanel();
-        jLabel5 = new javax.swing.JLabel();
+        jPanel17 = new javax.swing.JPanel();
+        jLabel33 = new javax.swing.JLabel();
+        jLabel34 = new javax.swing.JLabel();
         jPanel14 = new javax.swing.JPanel();
         jPanel16 = new javax.swing.JPanel();
         jLabel23 = new javax.swing.JLabel();
@@ -154,7 +251,9 @@ public void showBarChart(){
         jScrollPane2 = new javax.swing.JScrollPane();
         rSTableMetro2 = new rojerusan.RSTableMetro();
         jLabel27 = new javax.swing.JLabel();
-        panelBarChart = new javax.swing.JPanel();
+        showPieChart = new javax.swing.JPanel();
+        panelLegend = new javax.swing.JPanel();
+        jLabel35 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setUndecorated(true);
@@ -190,128 +289,157 @@ public void showBarChart(){
         button_exit.addActionListener(this::button_exitActionPerformed);
         jPanel1.add(button_exit, new org.netbeans.lib.awtextra.AbsoluteConstraints(1852, 4, 50, -1));
 
-        jLabel2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/adminIcons/icons8_View_Details_26px.png"))); // NOI18N
-        jPanel1.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(356, 8, 44, 42));
+        jLabel2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/aaaaaaaa/icons8-menu-24 (1).png"))); // NOI18N
+        jPanel1.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(346, 10, 26, 38));
 
         getContentPane().add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 1905, 60));
 
         jPanel3.setBackground(new java.awt.Color(255, 255, 255));
         jPanel3.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        jPanel13.setBackground(new java.awt.Color(51, 51, 51));
+        jPanel13.setBackground(new java.awt.Color(255, 255, 255));
         jPanel13.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jLabel16.setFont(new java.awt.Font("Yu Gothic UI Light", 0, 24)); // NOI18N
-        jLabel16.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel16.setIcon(new javax.swing.ImageIcon(getClass().getResource("/adminIcons/icons8_Exit_26px_2.png"))); // NOI18N
+        jLabel16.setIcon(new javax.swing.ImageIcon(getClass().getResource("/aaaaaaaa/icons8-log-out-24.png"))); // NOI18N
         jLabel16.setText(" Log out");
         jPanel13.add(jLabel16, new org.netbeans.lib.awtextra.AbsoluteConstraints(14, 12, -1, -1));
 
         jPanel3.add(jPanel13, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 903, 340, 60));
 
-        jPanel12.setBackground(new java.awt.Color(51, 51, 51));
+        jPanel12.setBackground(new java.awt.Color(255, 255, 255));
         jPanel12.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jLabel15.setFont(new java.awt.Font("Yu Gothic UI Light", 0, 24)); // NOI18N
-        jLabel15.setForeground(new java.awt.Color(255, 255, 255));
         jLabel15.setText("Defaulter List");
         jPanel12.add(jLabel15, new org.netbeans.lib.awtextra.AbsoluteConstraints(14, 12, -1, -1));
 
-        jPanel3.add(jPanel12, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 492, 340, 60));
+        jLabel32.setFont(new java.awt.Font("Yu Gothic UI Light", 0, 24)); // NOI18N
+        jLabel32.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel32.setIcon(new javax.swing.ImageIcon(getClass().getResource("/adminIcons/icons8_Conference_26px.png"))); // NOI18N
+        jPanel12.add(jLabel32, new org.netbeans.lib.awtextra.AbsoluteConstraints(302, 16, -1, -1));
 
-        jPanel11.setBackground(new java.awt.Color(51, 51, 51));
+        jPanel3.add(jPanel12, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 480, 340, 60));
+
+        jPanel11.setBackground(new java.awt.Color(255, 255, 255));
         jPanel11.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jLabel14.setFont(new java.awt.Font("Yu Gothic UI Light", 0, 24)); // NOI18N
-        jLabel14.setForeground(new java.awt.Color(255, 255, 255));
         jLabel14.setText("View Issued Books ");
         jPanel11.add(jLabel14, new org.netbeans.lib.awtextra.AbsoluteConstraints(14, 12, -1, -1));
 
-        jPanel3.add(jPanel11, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 432, 340, 60));
+        jLabel31.setFont(new java.awt.Font("Yu Gothic UI Light", 0, 24)); // NOI18N
+        jLabel31.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel31.setIcon(new javax.swing.ImageIcon(getClass().getResource("/aaaaaaaa/icons8-love-book-24.png"))); // NOI18N
+        jPanel11.add(jLabel31, new org.netbeans.lib.awtextra.AbsoluteConstraints(302, 16, -1, -1));
 
-        jPanel10.setBackground(new java.awt.Color(51, 51, 51));
+        jPanel3.add(jPanel11, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 420, 340, 60));
+
+        jPanel10.setBackground(new java.awt.Color(255, 255, 255));
         jPanel10.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jLabel13.setFont(new java.awt.Font("Yu Gothic UI Light", 0, 24)); // NOI18N
-        jLabel13.setForeground(new java.awt.Color(255, 255, 255));
         jLabel13.setText("Records");
         jPanel10.add(jLabel13, new org.netbeans.lib.awtextra.AbsoluteConstraints(14, 12, -1, -1));
 
-        jPanel3.add(jPanel10, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 372, 340, 60));
+        jLabel30.setFont(new java.awt.Font("Yu Gothic UI Light", 0, 24)); // NOI18N
+        jLabel30.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel30.setIcon(new javax.swing.ImageIcon(getClass().getResource("/aaaaaaaa/icons8-records-24.png"))); // NOI18N
+        jPanel10.add(jLabel30, new org.netbeans.lib.awtextra.AbsoluteConstraints(302, 16, -1, -1));
 
-        jPanel9.setBackground(new java.awt.Color(51, 51, 51));
+        jPanel3.add(jPanel10, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 360, 340, 60));
+
+        jPanel9.setBackground(new java.awt.Color(255, 255, 255));
         jPanel9.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jLabel12.setFont(new java.awt.Font("Yu Gothic UI Light", 0, 24)); // NOI18N
-        jLabel12.setForeground(new java.awt.Color(255, 255, 255));
         jLabel12.setText("Books returned");
         jPanel9.add(jLabel12, new org.netbeans.lib.awtextra.AbsoluteConstraints(14, 12, -1, -1));
 
-        jPanel3.add(jPanel9, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 312, 340, 60));
+        jLabel29.setFont(new java.awt.Font("Yu Gothic UI Light", 0, 24)); // NOI18N
+        jLabel29.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel29.setIcon(new javax.swing.ImageIcon(getClass().getResource("/aaaaaaaa/icons8-return-purchase-24.png"))); // NOI18N
+        jPanel9.add(jLabel29, new org.netbeans.lib.awtextra.AbsoluteConstraints(302, 16, -1, -1));
 
-        jPanel8.setBackground(new java.awt.Color(51, 51, 51));
+        jPanel3.add(jPanel9, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 300, 340, 60));
+
+        jPanel8.setBackground(new java.awt.Color(255, 255, 255));
         jPanel8.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jLabel11.setFont(new java.awt.Font("Yu Gothic UI Light", 0, 24)); // NOI18N
-        jLabel11.setForeground(new java.awt.Color(255, 255, 255));
         jLabel11.setText("Issue Books");
         jPanel8.add(jLabel11, new org.netbeans.lib.awtextra.AbsoluteConstraints(14, 12, -1, -1));
 
-        jPanel3.add(jPanel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 252, 340, 60));
+        jLabel28.setFont(new java.awt.Font("Yu Gothic UI Light", 0, 24)); // NOI18N
+        jLabel28.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel28.setIcon(new javax.swing.ImageIcon(getClass().getResource("/adminIcons/icons8_Sell_26px.png"))); // NOI18N
+        jPanel8.add(jLabel28, new org.netbeans.lib.awtextra.AbsoluteConstraints(302, 16, -1, -1));
 
-        jPanel7.setBackground(new java.awt.Color(51, 51, 51));
+        jPanel3.add(jPanel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 240, 340, 60));
+
+        jPanel7.setBackground(new java.awt.Color(255, 255, 255));
         jPanel7.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jLabel10.setFont(new java.awt.Font("Yu Gothic UI Light", 0, 24)); // NOI18N
-        jLabel10.setForeground(new java.awt.Color(255, 255, 255));
         jLabel10.setText("User management");
         jPanel7.add(jLabel10, new org.netbeans.lib.awtextra.AbsoluteConstraints(14, 12, -1, -1));
 
-        jPanel3.add(jPanel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 192, 340, 60));
+        jLabel8.setFont(new java.awt.Font("Yu Gothic UI Light", 0, 24)); // NOI18N
+        jLabel8.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel8.setIcon(new javax.swing.ImageIcon(getClass().getResource("/aaaaaaaa/icons8-user-24 (1).png"))); // NOI18N
+        jPanel7.add(jLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(302, 16, -1, -1));
 
-        jPanel6.setBackground(new java.awt.Color(51, 51, 51));
+        jPanel3.add(jPanel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 180, 340, 60));
+
+        jPanel6.setBackground(new java.awt.Color(255, 255, 255));
         jPanel6.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jLabel9.setFont(new java.awt.Font("Yu Gothic UI Light", 0, 24)); // NOI18N
-        jLabel9.setForeground(new java.awt.Color(255, 255, 255));
         jLabel9.setText("Books Management");
         jPanel6.add(jLabel9, new org.netbeans.lib.awtextra.AbsoluteConstraints(14, 12, -1, -1));
 
-        jPanel3.add(jPanel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 132, 340, 60));
+        jLabel7.setFont(new java.awt.Font("Yu Gothic UI Light", 0, 24)); // NOI18N
+        jLabel7.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel7.setIcon(new javax.swing.ImageIcon(getClass().getResource("/aaaaaaaa/icons8-books-24.png"))); // NOI18N
+        jPanel6.add(jLabel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(302, 16, -1, -1));
 
-        jPanel5.setBackground(new java.awt.Color(51, 51, 51));
+        jPanel3.add(jPanel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 120, 340, 60));
+
+        jPanel5.setBackground(new java.awt.Color(255, 255, 255));
         jPanel5.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jLabel6.setFont(new java.awt.Font("Yu Gothic UI Light", 0, 24)); // NOI18N
-        jLabel6.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel6.setText("Dashboard");
+        jLabel6.setText("NAME OF USER");
         jPanel5.add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(14, 12, -1, -1));
 
-        jPanel3.add(jPanel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 60, 340, 60));
+        jPanel3.add(jPanel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 340, 60));
 
-        jPanel4.setBackground(new java.awt.Color(51, 51, 51));
-        jPanel4.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+        jPanel17.setBackground(new java.awt.Color(255, 255, 255));
+        jPanel17.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        jLabel5.setFont(new java.awt.Font("Yu Gothic UI Light", 0, 24)); // NOI18N
-        jLabel5.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel5.setIcon(new javax.swing.ImageIcon(getClass().getResource("/adminIcons/home_24px.png"))); // NOI18N
-        jLabel5.setText(" Home Page");
-        jPanel4.add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(14, 12, -1, -1));
+        jLabel33.setFont(new java.awt.Font("Yu Gothic UI Light", 0, 24)); // NOI18N
+        jLabel33.setText("Dashboard");
+        jPanel17.add(jLabel33, new org.netbeans.lib.awtextra.AbsoluteConstraints(14, 12, -1, -1));
 
-        jPanel3.add(jPanel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 340, 60));
+        jLabel34.setFont(new java.awt.Font("Yu Gothic UI Light", 0, 24)); // NOI18N
+        jLabel34.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel34.setIcon(new javax.swing.ImageIcon(getClass().getResource("/aaaaaaaa/icons8-home-24.png"))); // NOI18N
+        jPanel17.add(jLabel34, new org.netbeans.lib.awtextra.AbsoluteConstraints(302, 16, -1, -1));
+
+        jPanel3.add(jPanel17, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 60, 340, 60));
 
         getContentPane().add(jPanel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 60, 340, 964));
 
-        jPanel14.setBackground(new java.awt.Color(204, 204, 204));
+        jPanel14.setBackground(new java.awt.Color(229, 229, 229));
         jPanel14.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        jPanel16.setBackground(new java.awt.Color(51, 51, 51));
+        jPanel16.setBackground(new java.awt.Color(130, 217, 199));
         jPanel16.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jLabel23.setFont(new java.awt.Font("Yu Gothic UI Semibold", 1, 36)); // NOI18N
         jLabel23.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel23.setIcon(new javax.swing.ImageIcon(getClass().getResource("/adminIcons/icons8_People_50px.png"))); // NOI18N
-        jPanel16.add(jLabel23, new org.netbeans.lib.awtextra.AbsoluteConstraints(364, 24, 52, 42));
+        jLabel23.setIcon(new javax.swing.ImageIcon(getClass().getResource("/aaaaaaaa/icons8-graph-24 (1).png"))); // NOI18N
+        jPanel16.add(jLabel23, new org.netbeans.lib.awtextra.AbsoluteConstraints(390, 20, 52, 42));
 
         jLabel24.setFont(new java.awt.Font("Yu Gothic UI Light", 0, 24)); // NOI18N
         jLabel24.setForeground(new java.awt.Color(255, 255, 255));
@@ -325,13 +453,13 @@ public void showBarChart(){
 
         jPanel14.add(jPanel16, new org.netbeans.lib.awtextra.AbsoluteConstraints(1060, 70, 440, 280));
 
-        jPanel15.setBackground(new java.awt.Color(51, 51, 51));
+        jPanel15.setBackground(new java.awt.Color(146, 202, 246));
         jPanel15.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jLabel20.setFont(new java.awt.Font("Yu Gothic UI Semibold", 1, 36)); // NOI18N
         jLabel20.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel20.setIcon(new javax.swing.ImageIcon(getClass().getResource("/adminIcons/icons8_People_50px.png"))); // NOI18N
-        jPanel15.add(jLabel20, new org.netbeans.lib.awtextra.AbsoluteConstraints(364, 24, 52, 42));
+        jLabel20.setIcon(new javax.swing.ImageIcon(getClass().getResource("/aaaaaaaa/icons8-books-24 (3).png"))); // NOI18N
+        jPanel15.add(jLabel20, new org.netbeans.lib.awtextra.AbsoluteConstraints(372, 26, 52, 42));
 
         jLabel21.setFont(new java.awt.Font("Yu Gothic UI Light", 0, 24)); // NOI18N
         jLabel21.setForeground(new java.awt.Color(255, 255, 255));
@@ -345,13 +473,13 @@ public void showBarChart(){
 
         jPanel14.add(jPanel15, new org.netbeans.lib.awtextra.AbsoluteConstraints(560, 70, 440, 280));
 
-        jPanel2.setBackground(new java.awt.Color(51, 51, 51));
+        jPanel2.setBackground(new java.awt.Color(255, 183, 160));
         jPanel2.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jLabel17.setFont(new java.awt.Font("Yu Gothic UI Semibold", 1, 36)); // NOI18N
         jLabel17.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel17.setIcon(new javax.swing.ImageIcon(getClass().getResource("/adminIcons/icons8_People_50px.png"))); // NOI18N
-        jPanel2.add(jLabel17, new org.netbeans.lib.awtextra.AbsoluteConstraints(364, 24, 52, 42));
+        jLabel17.setIcon(new javax.swing.ImageIcon(getClass().getResource("/aaaaaaaa/24.png"))); // NOI18N
+        jPanel2.add(jLabel17, new org.netbeans.lib.awtextra.AbsoluteConstraints(362, 26, 42, 40));
 
         jLabel18.setFont(new java.awt.Font("Yu Gothic UI Light", 0, 24)); // NOI18N
         jLabel18.setForeground(new java.awt.Color(255, 255, 255));
@@ -377,9 +505,9 @@ public void showBarChart(){
                 "User ID", "Name", "Location", "Book Issued"
             }
         ));
-        rSTableMetro1.setColorBackgoundHead(new java.awt.Color(51, 51, 51));
+        rSTableMetro1.setColorBackgoundHead(new java.awt.Color(105, 104, 104));
         rSTableMetro1.setColorBordeFilas(new java.awt.Color(204, 204, 204));
-        rSTableMetro1.setColorBordeHead(new java.awt.Color(51, 51, 51));
+        rSTableMetro1.setColorBordeHead(new java.awt.Color(105, 104, 104));
         rSTableMetro1.setColorFilasForeground1(new java.awt.Color(0, 0, 0));
         rSTableMetro1.setColorFilasForeground2(new java.awt.Color(255, 255, 255));
         rSTableMetro1.setColorSelBackgound(new java.awt.Color(102, 102, 102));
@@ -391,13 +519,13 @@ public void showBarChart(){
         rSTableMetro1.setShowGrid(false);
         jScrollPane1.setViewportView(rSTableMetro1);
 
-        jPanel14.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 406, 944, 194));
+        jPanel14.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 412, 944, 194));
 
         jLabel26.setBackground(new java.awt.Color(51, 51, 51));
         jLabel26.setFont(new java.awt.Font("Yu Gothic UI Light", 0, 24)); // NOI18N
         jLabel26.setForeground(new java.awt.Color(51, 51, 51));
-        jLabel26.setText("User Details");
-        jPanel14.add(jLabel26, new org.netbeans.lib.awtextra.AbsoluteConstraints(66, 370, -1, -1));
+        jLabel26.setText("Issued Books Details");
+        jPanel14.add(jLabel26, new org.netbeans.lib.awtextra.AbsoluteConstraints(1064, 374, -1, -1));
 
         rSTableMetro2.setForeground(new java.awt.Color(255, 255, 255));
         rSTableMetro2.setModel(new javax.swing.table.DefaultTableModel(
@@ -411,9 +539,9 @@ public void showBarChart(){
                 "User ID", "Name", "Location", "Book Issued"
             }
         ));
-        rSTableMetro2.setColorBackgoundHead(new java.awt.Color(51, 51, 51));
+        rSTableMetro2.setColorBackgoundHead(new java.awt.Color(105, 104, 104));
         rSTableMetro2.setColorBordeFilas(new java.awt.Color(204, 204, 204));
-        rSTableMetro2.setColorBordeHead(new java.awt.Color(51, 51, 51));
+        rSTableMetro2.setColorBordeHead(new java.awt.Color(105, 104, 104));
         rSTableMetro2.setColorFilasForeground1(new java.awt.Color(0, 0, 0));
         rSTableMetro2.setColorFilasForeground2(new java.awt.Color(255, 255, 255));
         rSTableMetro2.setColorSelBackgound(new java.awt.Color(102, 102, 102));
@@ -425,14 +553,27 @@ public void showBarChart(){
         rSTableMetro2.setShowGrid(false);
         jScrollPane2.setViewportView(rSTableMetro2);
 
-        jPanel14.add(jScrollPane2, new org.netbeans.lib.awtextra.AbsoluteConstraints(64, 690, 944, 194));
+        jPanel14.add(jScrollPane2, new org.netbeans.lib.awtextra.AbsoluteConstraints(64, 696, 944, 194));
 
         jLabel27.setBackground(new java.awt.Color(51, 51, 51));
         jLabel27.setFont(new java.awt.Font("Yu Gothic UI Light", 0, 24)); // NOI18N
         jLabel27.setForeground(new java.awt.Color(51, 51, 51));
         jLabel27.setText("Book Details");
-        jPanel14.add(jLabel27, new org.netbeans.lib.awtextra.AbsoluteConstraints(70, 654, -1, -1));
-        jPanel14.add(panelBarChart, new org.netbeans.lib.awtextra.AbsoluteConstraints(1060, 408, 440, 472));
+        jPanel14.add(jLabel27, new org.netbeans.lib.awtextra.AbsoluteConstraints(70, 660, -1, -1));
+
+        showPieChart.setBackground(new java.awt.Color(255, 255, 255));
+        showPieChart.setLayout(new java.awt.BorderLayout());
+        jPanel14.add(showPieChart, new org.netbeans.lib.awtextra.AbsoluteConstraints(1060, 410, 440, 330));
+
+        panelLegend.setBackground(new java.awt.Color(246, 242, 242));
+        panelLegend.setName(""); // NOI18N
+        jPanel14.add(panelLegend, new org.netbeans.lib.awtextra.AbsoluteConstraints(1060, 732, 440, 156));
+
+        jLabel35.setBackground(new java.awt.Color(51, 51, 51));
+        jLabel35.setFont(new java.awt.Font("Yu Gothic UI Light", 0, 24)); // NOI18N
+        jLabel35.setForeground(new java.awt.Color(51, 51, 51));
+        jLabel35.setText("User Details");
+        jPanel14.add(jLabel35, new org.netbeans.lib.awtextra.AbsoluteConstraints(66, 376, -1, -1));
 
         getContentPane().add(jPanel14, new org.netbeans.lib.awtextra.AbsoluteConstraints(340, 60, 1566, 964));
 
@@ -480,10 +621,19 @@ public void showBarChart(){
     private javax.swing.JLabel jLabel25;
     private javax.swing.JLabel jLabel26;
     private javax.swing.JLabel jLabel27;
+    private javax.swing.JLabel jLabel28;
+    private javax.swing.JLabel jLabel29;
     private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel30;
+    private javax.swing.JLabel jLabel31;
+    private javax.swing.JLabel jLabel32;
+    private javax.swing.JLabel jLabel33;
+    private javax.swing.JLabel jLabel34;
+    private javax.swing.JLabel jLabel35;
     private javax.swing.JLabel jLabel4;
-    private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
+    private javax.swing.JLabel jLabel7;
+    private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel10;
@@ -493,9 +643,9 @@ public void showBarChart(){
     private javax.swing.JPanel jPanel14;
     private javax.swing.JPanel jPanel15;
     private javax.swing.JPanel jPanel16;
+    private javax.swing.JPanel jPanel17;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
-    private javax.swing.JPanel jPanel4;
     private javax.swing.JPanel jPanel5;
     private javax.swing.JPanel jPanel6;
     private javax.swing.JPanel jPanel7;
@@ -503,8 +653,9 @@ public void showBarChart(){
     private javax.swing.JPanel jPanel9;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
-    private javax.swing.JPanel panelBarChart;
+    private javax.swing.JPanel panelLegend;
     private rojerusan.RSTableMetro rSTableMetro1;
     private rojerusan.RSTableMetro rSTableMetro2;
+    private javax.swing.JPanel showPieChart;
     // End of variables declaration//GEN-END:variables
 }
