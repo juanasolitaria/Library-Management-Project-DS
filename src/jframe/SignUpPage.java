@@ -301,6 +301,7 @@ public boolean checkDuplicateusers(){
                 button_exitMouseClicked(evt);
             }
         });
+        button_exit.addActionListener(this::button_exitActionPerformed);
         jPanel2.add(button_exit, new org.netbeans.lib.awtextra.AbsoluteConstraints(478, 2, 50, -1));
 
         getContentPane().add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(990, 0, 530, 830));
@@ -359,6 +360,10 @@ public boolean checkDuplicateusers(){
                 login.setVisible(true);                                         //redirects to login page
                 this.dispose();                                                  
     }//GEN-LAST:event_button_loginMouseClicked
+
+    private void button_exitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_button_exitActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_button_exitActionPerformed
 
     /**
      * @param args the command line arguments

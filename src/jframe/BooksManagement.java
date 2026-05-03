@@ -4,6 +4,12 @@
  */
 package jframe;
 
+import java.sql.Connection;
+import javax.swing.table.DefaultTableModel;
+import java.sql.Statement;
+import java.sql.*;
+import javax.swing.table.TableModel;
+
 /**
  *
  * @author juans
@@ -17,7 +23,43 @@ public class BooksManagement extends javax.swing.JFrame {
      */
     public BooksManagement() {
         initComponents();
+        setBookDetails();                                                       //calling method to display details from database in table
     }
+    
+    //method to display details from database in table
+    
+    
+    String book_name, author;
+    int book_id, quantity;
+    DefaultTableModel model;
+    public void setBookDetails(){
+        try {
+            Connection con = DBConnection.getConnection();                      //MySQL connection
+            Statement st = con.createStatement();                               //SQL executor
+            ResultSet rs = st.executeQuery("select * from book_details");       //MySQL instruction (executes the SELECT and stores ALL results in rs)
+            
+            // loops row by row — rs.next() moves to the next row from MySQL book_details table
+            // when there are no more rows it returns false and the while stops
+            while(rs.next()){                                                   
+                String book_id = rs.getString("book_id");                       //from the current row, grabs each column by its name and stores it in temp variables
+                String book_name = rs.getString("book_name");
+                String author = rs.getString("author");
+                int quantity = rs.getInt("quantity");
+                
+                Object[] obj = {book_id, book_name, author, quantity};          //packages the 4 values into an array in the same order
+                model = (DefaultTableModel) table_bookdetails.getModel();       //controls the rows
+                
+                // adds the array as a new row in the visual table
+                // each loop iteration adds a new row with the current book
+                model.addRow(obj);
+            }
+            
+        } catch (Exception e) {
+            // if something fails (DB off, table doesn't exist, etc)
+            // prints the error in console instead of crashing the program
+            e.printStackTrace();
+        }
+}
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -28,22 +70,197 @@ public class BooksManagement extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        jPanel1 = new javax.swing.JPanel();
+        button_back = new javax.swing.JButton();
+        txt_bookId = new app.bolivia.swing.JCTextField();
+        txt_bookName = new app.bolivia.swing.JCTextField();
+        jLabel11 = new javax.swing.JLabel();
+        txt_authorName = new app.bolivia.swing.JCTextField();
+        jLabel13 = new javax.swing.JLabel();
+        txt_quantity = new app.bolivia.swing.JCTextField();
+        jLabel15 = new javax.swing.JLabel();
+        jLabel16 = new javax.swing.JLabel();
+        button_LogIn = new javax.swing.JButton();
+        button_LogIn1 = new javax.swing.JButton();
+        button_LogIn2 = new javax.swing.JButton();
+        jPanel2 = new javax.swing.JPanel();
+        button_exit = new javax.swing.JButton();
+        jScrollPane3 = new javax.swing.JScrollPane();
+        table_bookdetails = new rojerusan.RSTableMetro();
+        jLabel1 = new javax.swing.JLabel();
+
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setUndecorated(true);
+        getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
-        getContentPane().setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 1724, Short.MAX_VALUE)
-        );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 824, Short.MAX_VALUE)
-        );
+        jPanel1.setBackground(new java.awt.Color(51, 51, 51));
+        jPanel1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        setSize(new java.awt.Dimension(1740, 832));
+        button_back.setBackground(new java.awt.Color(229, 229, 229));
+        button_back.setIcon(new javax.swing.ImageIcon(getClass().getResource("/aaaaaaaa/icons8-back-32.png"))); // NOI18N
+        button_back.setBorderPainted(false);
+        button_back.setContentAreaFilled(false);
+        button_back.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        button_back.setFocusPainted(false);
+        button_back.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                button_backMouseClicked(evt);
+            }
+        });
+        jPanel1.add(button_back, new org.netbeans.lib.awtextra.AbsoluteConstraints(4, 10, -1, -1));
+
+        txt_bookId.setBackground(new java.awt.Color(51, 51, 51));
+        txt_bookId.setBorder(javax.swing.BorderFactory.createMatteBorder(0, 0, 1, 0, new java.awt.Color(255, 255, 255)));
+        txt_bookId.setForeground(new java.awt.Color(255, 255, 255));
+        txt_bookId.setFont(new java.awt.Font("Microsoft JhengHei UI Light", 0, 18)); // NOI18N
+        txt_bookId.setPhColor(new java.awt.Color(255, 255, 255));
+        txt_bookId.setPlaceholder("Enter Book ID...");
+        jPanel1.add(txt_bookId, new org.netbeans.lib.awtextra.AbsoluteConstraints(114, 220, 340, -1));
+
+        txt_bookName.setBackground(new java.awt.Color(51, 51, 51));
+        txt_bookName.setBorder(javax.swing.BorderFactory.createMatteBorder(0, 0, 1, 0, new java.awt.Color(255, 255, 255)));
+        txt_bookName.setForeground(new java.awt.Color(255, 255, 255));
+        txt_bookName.setFont(new java.awt.Font("Microsoft JhengHei UI Light", 0, 18)); // NOI18N
+        txt_bookName.setPhColor(new java.awt.Color(255, 255, 255));
+        txt_bookName.setPlaceholder("Enter Book Name...");
+        jPanel1.add(txt_bookName, new org.netbeans.lib.awtextra.AbsoluteConstraints(114, 350, 340, -1));
+
+        jLabel11.setFont(new java.awt.Font("Yu Gothic Light", 1, 20)); // NOI18N
+        jLabel11.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel11.setText("Book ID");
+        jPanel1.add(jLabel11, new org.netbeans.lib.awtextra.AbsoluteConstraints(114, 180, 130, 40));
+
+        txt_authorName.setBackground(new java.awt.Color(51, 51, 51));
+        txt_authorName.setBorder(javax.swing.BorderFactory.createMatteBorder(0, 0, 1, 0, new java.awt.Color(255, 255, 255)));
+        txt_authorName.setForeground(new java.awt.Color(255, 255, 255));
+        txt_authorName.setFont(new java.awt.Font("Microsoft JhengHei UI Light", 0, 18)); // NOI18N
+        txt_authorName.setPhColor(new java.awt.Color(255, 255, 255));
+        txt_authorName.setPlaceholder("Enter Author Name...");
+        jPanel1.add(txt_authorName, new org.netbeans.lib.awtextra.AbsoluteConstraints(114, 480, 340, -1));
+
+        jLabel13.setFont(new java.awt.Font("Yu Gothic Light", 1, 20)); // NOI18N
+        jLabel13.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel13.setText("Author Name");
+        jPanel1.add(jLabel13, new org.netbeans.lib.awtextra.AbsoluteConstraints(114, 440, 130, 40));
+
+        txt_quantity.setBackground(new java.awt.Color(51, 51, 51));
+        txt_quantity.setBorder(javax.swing.BorderFactory.createMatteBorder(0, 0, 1, 0, new java.awt.Color(255, 255, 255)));
+        txt_quantity.setForeground(new java.awt.Color(255, 255, 255));
+        txt_quantity.setFont(new java.awt.Font("Microsoft YaHei UI Light", 0, 18)); // NOI18N
+        txt_quantity.setPhColor(new java.awt.Color(255, 255, 255));
+        txt_quantity.setPlaceholder("Enter Quantity...");
+        jPanel1.add(txt_quantity, new org.netbeans.lib.awtextra.AbsoluteConstraints(114, 610, 340, -1));
+
+        jLabel15.setFont(new java.awt.Font("Yu Gothic Light", 1, 20)); // NOI18N
+        jLabel15.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel15.setText("Quantity");
+        jPanel1.add(jLabel15, new org.netbeans.lib.awtextra.AbsoluteConstraints(114, 570, 130, 40));
+
+        jLabel16.setFont(new java.awt.Font("Yu Gothic Light", 1, 20)); // NOI18N
+        jLabel16.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel16.setText("Book Name");
+        jPanel1.add(jLabel16, new org.netbeans.lib.awtextra.AbsoluteConstraints(114, 310, 130, 40));
+
+        button_LogIn.setBackground(new java.awt.Color(204, 204, 204));
+        button_LogIn.setFont(new java.awt.Font("Yu Gothic UI Semibold", 0, 12)); // NOI18N
+        button_LogIn.setText("UPDATE");
+        jPanel1.add(button_LogIn, new org.netbeans.lib.awtextra.AbsoluteConstraints(114, 766, 342, 44));
+
+        button_LogIn1.setBackground(new java.awt.Color(204, 204, 204));
+        button_LogIn1.setFont(new java.awt.Font("Yu Gothic UI Semibold", 0, 12)); // NOI18N
+        button_LogIn1.setText("ADD");
+        button_LogIn1.setToolTipText("");
+        jPanel1.add(button_LogIn1, new org.netbeans.lib.awtextra.AbsoluteConstraints(114, 700, 342, 44));
+
+        button_LogIn2.setBackground(new java.awt.Color(204, 204, 204));
+        button_LogIn2.setFont(new java.awt.Font("Yu Gothic UI Semibold", 0, 12)); // NOI18N
+        button_LogIn2.setText("DELETE");
+        jPanel1.add(button_LogIn2, new org.netbeans.lib.awtextra.AbsoluteConstraints(114, 830, 342, 44));
+
+        getContentPane().add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 580, 1024));
+
+        jPanel2.setBackground(new java.awt.Color(245, 245, 245));
+        jPanel2.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        button_exit.setBackground(new java.awt.Color(51, 51, 51));
+        button_exit.setFont(new java.awt.Font("Yu Gothic UI Light", 1, 20)); // NOI18N
+        button_exit.setForeground(new java.awt.Color(51, 51, 51));
+        button_exit.setText("X");
+        button_exit.setBorderPainted(false);
+        button_exit.setContentAreaFilled(false);
+        button_exit.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        button_exit.setFocusPainted(false);
+        button_exit.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                button_exitMouseClicked(evt);
+            }
+        });
+        jPanel2.add(button_exit, new org.netbeans.lib.awtextra.AbsoluteConstraints(1264, 12, 64, -1));
+
+        table_bookdetails.setForeground(new java.awt.Color(255, 255, 255));
+        table_bookdetails.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+
+            },
+            new String [] {
+                "Book ID", "Name", "Author", "Quantity"
+            }
+        ));
+        table_bookdetails.setColorBackgoundHead(new java.awt.Color(181, 181, 181));
+        table_bookdetails.setColorBordeFilas(new java.awt.Color(255, 255, 255));
+        table_bookdetails.setColorBordeHead(new java.awt.Color(181, 181, 181));
+        table_bookdetails.setColorFilasBackgound2(new java.awt.Color(238, 238, 238));
+        table_bookdetails.setColorFilasForeground1(new java.awt.Color(64, 64, 64));
+        table_bookdetails.setColorFilasForeground2(new java.awt.Color(64, 64, 64));
+        table_bookdetails.setColorSelBackgound(new java.awt.Color(255, 186, 118));
+        table_bookdetails.setFont(new java.awt.Font("Yu Gothic UI Light", 0, 12)); // NOI18N
+        table_bookdetails.setFuenteFilas(new java.awt.Font("Yu Gothic UI Semibold", 1, 12)); // NOI18N
+        table_bookdetails.setFuenteHead(new java.awt.Font("Yu Gothic UI Semibold", 1, 15)); // NOI18N
+        table_bookdetails.setGridColor(new java.awt.Color(204, 204, 204));
+        table_bookdetails.setGrosorBordeFilas(0);
+        table_bookdetails.setGrosorBordeHead(0);
+        table_bookdetails.setRowHeight(35);
+        table_bookdetails.setShowGrid(false);
+        table_bookdetails.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                table_bookdetailsMouseClicked(evt);
+            }
+        });
+        jScrollPane3.setViewportView(table_bookdetails);
+
+        jPanel2.add(jScrollPane3, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 145, 1026, 776));
+
+        jLabel1.setFont(new java.awt.Font("Yu Gothic UI Semibold", 1, 36)); // NOI18N
+        jLabel1.setForeground(new java.awt.Color(102, 102, 102));
+        jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/aaaaaaaa/icons8-books-50.png"))); // NOI18N
+        jLabel1.setText(" Book Management");
+        jPanel2.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 70, -1, -1));
+
+        getContentPane().add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(580, -2, 1328, 1028));
+
+        setSize(new java.awt.Dimension(1905, 1023));
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
+
+    private void button_backMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_button_backMouseClicked
+        HomePage home = new HomePage();                                         //to go back to homepage
+        home.setVisible(true);
+        dispose();
+    }//GEN-LAST:event_button_backMouseClicked
+
+    private void button_exitMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_button_exitMouseClicked
+        System.exit(0);
+    }//GEN-LAST:event_button_exitMouseClicked
+
+    private void table_bookdetailsMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_table_bookdetailsMouseClicked
+        int row = table_bookdetails.getSelectedRow();                           //method to show details in the placeholders
+        TableModel model = table_bookdetails.getModel();
+        
+        txt_bookId.setText(model.getValueAt(row, 0).toString());                //placeholders rewritten (row, column)
+        txt_bookName.setText(model.getValueAt(row, 1).toString());
+        txt_authorName.setText(model.getValueAt(row, 2).toString());
+        txt_quantity.setText(model.getValueAt(row, 3).toString());
+    }//GEN-LAST:event_table_bookdetailsMouseClicked
 
     /**
      * @param args the command line arguments
@@ -71,5 +288,23 @@ public class BooksManagement extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton button_LogIn;
+    private javax.swing.JButton button_LogIn1;
+    private javax.swing.JButton button_LogIn2;
+    private javax.swing.JButton button_back;
+    private javax.swing.JButton button_exit;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel11;
+    private javax.swing.JLabel jLabel13;
+    private javax.swing.JLabel jLabel15;
+    private javax.swing.JLabel jLabel16;
+    private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel2;
+    private javax.swing.JScrollPane jScrollPane3;
+    private rojerusan.RSTableMetro table_bookdetails;
+    private app.bolivia.swing.JCTextField txt_authorName;
+    private app.bolivia.swing.JCTextField txt_bookId;
+    private app.bolivia.swing.JCTextField txt_bookName;
+    private app.bolivia.swing.JCTextField txt_quantity;
     // End of variables declaration//GEN-END:variables
 }
