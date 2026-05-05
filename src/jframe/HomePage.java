@@ -318,6 +318,12 @@ public void showBarChart(){
         jPanel3.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jPanel13.setBackground(new java.awt.Color(255, 255, 255));
+        jPanel13.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        jPanel13.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jPanel13MouseClicked(evt);
+            }
+        });
         jPanel13.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jLabel16.setFont(new java.awt.Font("Yu Gothic UI Light", 0, 24)); // NOI18N
@@ -545,7 +551,7 @@ public void showBarChart(){
         rSTableMetro2.setColorFilasBackgound2(new java.awt.Color(225, 225, 225));
         rSTableMetro2.setColorFilasForeground1(new java.awt.Color(51, 51, 51));
         rSTableMetro2.setColorFilasForeground2(new java.awt.Color(255, 255, 255));
-        rSTableMetro2.setColorSelBackgound(new java.awt.Color(102, 102, 102));
+        rSTableMetro2.setColorSelBackgound(new java.awt.Color(154, 202, 241));
         rSTableMetro2.setFont(new java.awt.Font("Yu Gothic UI Light", 0, 12)); // NOI18N
         rSTableMetro2.setFuenteFilas(new java.awt.Font("Yu Gothic UI Semibold", 1, 12)); // NOI18N
         rSTableMetro2.setFuenteHead(new java.awt.Font("Yu Gothic UI Semibold", 1, 15)); // NOI18N
@@ -596,7 +602,7 @@ public void showBarChart(){
         rSTableMetro3.setColorFilasBackgound2(new java.awt.Color(225, 225, 225));
         rSTableMetro3.setColorFilasForeground1(new java.awt.Color(51, 51, 51));
         rSTableMetro3.setColorFilasForeground2(new java.awt.Color(255, 255, 255));
-        rSTableMetro3.setColorSelBackgound(new java.awt.Color(102, 102, 102));
+        rSTableMetro3.setColorSelBackgound(new java.awt.Color(154, 202, 241));
         rSTableMetro3.setFont(new java.awt.Font("Yu Gothic UI Light", 0, 12)); // NOI18N
         rSTableMetro3.setFuenteFilas(new java.awt.Font("Yu Gothic UI Semibold", 1, 12)); // NOI18N
         rSTableMetro3.setFuenteHead(new java.awt.Font("Yu Gothic UI Semibold", 1, 15)); // NOI18N
@@ -641,6 +647,12 @@ public void showBarChart(){
     private void jCTextField1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCTextField1ActionPerformed
         // TODO add your handling code here:                                    //ignore
     }//GEN-LAST:event_jCTextField1ActionPerformed
+
+    private void jPanel13MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jPanel13MouseClicked
+        LoginPage logout = new LoginPage();
+        logout.setVisible(true);
+        dispose();
+    }//GEN-LAST:event_jPanel13MouseClicked
 
     /**
      * @param args the command line arguments

@@ -8,6 +8,7 @@ import java.sql.Connection;
 import javax.swing.table.DefaultTableModel;
 import java.sql.Statement;
 import java.sql.*;
+import javax.swing.JOptionPane;
 import javax.swing.table.TableModel;
 
 /**
@@ -26,11 +27,11 @@ public class BooksManagement extends javax.swing.JFrame {
         setBookDetails();                                                       //calling method to display details from database in table
     }
     
-    //method to display details from database in table
+
     
-    
-    String book_name, author;
-    int book_id, quantity;
+        //method to display details from database in table
+    String bookName, author;
+    int bookId, quantity;
     DefaultTableModel model;
     public void setBookDetails(){
         try {
@@ -60,6 +61,109 @@ public class BooksManagement extends javax.swing.JFrame {
             e.printStackTrace();
         }
 }
+    
+    
+    //add book method
+    public boolean addBook(){
+        Boolean isAdded = false;
+        bookId = Integer.parseInt(txt_bookId.getText());                        //bc get.Text returns a String we have to convert it to Integer bc variable bookId is integer type
+        bookName = txt_bookName.getText();                                      //returns a normal string name
+        author = txt_authorName.getText();
+        quantity = Integer.parseInt(txt_quantity.getText()); 
+        
+        
+        try {                                                                   //query to insert in database
+            Connection con = DBConnection.getConnection();
+            String sql = "insert into book_details values(?,?,?,?)";            //mysql instruction
+            PreparedStatement pst = con.prepareStatement(sql);                  //prepared instruction for security
+            
+            pst.setInt(1, bookId);                                              //setting values for placeholders
+            pst.setString(2, bookName);
+            pst.setString(3, author);
+            pst.setInt(4, quantity);
+            
+            int rowCount = pst.executeUpdate();
+            if (rowCount > 0) {
+                isAdded = true;
+            }
+            else{
+                isAdded = false;
+            }
+            
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+            
+        }
+        
+        return isAdded;
+    }
+    
+    //this method clears the table so the data inserted (new book) wont duplicate each time we add a new book.
+    public void clearTable(){
+        DefaultTableModel model = (DefaultTableModel) table_bookdetails.getModel();
+        model.setRowCount(0);
+    }
+    
+    
+    //Update method (to update book details)
+    public boolean Update(){
+        Boolean isUpdated = false;
+        bookId = Integer.parseInt(txt_bookId.getText());                        //bc get.Text returns a String we have to convert it to Integer bc variable bookId is integer type
+        bookName = txt_bookName.getText();                                      //returns a normal string name
+        author = txt_authorName.getText();
+        quantity = Integer.parseInt(txt_quantity.getText()); 
+        
+        try {
+            Connection con = DBConnection.getConnection();
+            String sql = "update book_details set book_name = ?, author = ?, quantity = ? where book_id = ?";  //MySQL query instruction
+            PreparedStatement pst = con.prepareStatement(sql);
+            
+            pst.setString(1, bookName);
+            pst.setString(2, author);
+            pst.setInt(3, quantity);
+            pst.setInt(4, bookId);
+           
+            int rowCount = pst.executeUpdate();
+            if (rowCount > 0) {
+                isUpdated = true;          
+            } else{
+                isUpdated = false;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return isUpdated;
+    }
+    
+    
+
+        //method to delete books
+    public boolean delete(){
+        boolean isDeleted = false;
+        bookId = Integer.parseInt(txt_bookId.getText());
+        
+                try {
+        Connection con = DBConnection.getConnection();
+        String sql = "delete from book_details where book_id = ? ";              //mysq instruction
+        PreparedStatement pst = con.prepareStatement(sql);
+        
+        pst.setInt(1, bookId);                                                  
+        
+        int rowCount = pst.executeUpdate();                                     
+        if (rowCount > 0) {                                                     //if book_id was found, pst.executeUpdate will execute in 1 row, rowCount = 1 (true)
+            isDeleted = true;
+        } else{
+            isDeleted = false;
+        }
+        
+
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return isDeleted;
+    }
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -80,9 +184,9 @@ public class BooksManagement extends javax.swing.JFrame {
         txt_quantity = new app.bolivia.swing.JCTextField();
         jLabel15 = new javax.swing.JLabel();
         jLabel16 = new javax.swing.JLabel();
-        button_LogIn = new javax.swing.JButton();
-        button_LogIn1 = new javax.swing.JButton();
-        button_LogIn2 = new javax.swing.JButton();
+        button_update = new javax.swing.JButton();
+        button_add = new javax.swing.JButton();
+        button_delete = new javax.swing.JButton();
         jPanel2 = new javax.swing.JPanel();
         button_exit = new javax.swing.JButton();
         jScrollPane3 = new javax.swing.JScrollPane();
@@ -161,21 +265,24 @@ public class BooksManagement extends javax.swing.JFrame {
         jLabel16.setText("Book Name");
         jPanel1.add(jLabel16, new org.netbeans.lib.awtextra.AbsoluteConstraints(114, 310, 130, 40));
 
-        button_LogIn.setBackground(new java.awt.Color(204, 204, 204));
-        button_LogIn.setFont(new java.awt.Font("Yu Gothic UI Semibold", 0, 12)); // NOI18N
-        button_LogIn.setText("UPDATE");
-        jPanel1.add(button_LogIn, new org.netbeans.lib.awtextra.AbsoluteConstraints(114, 766, 342, 44));
+        button_update.setBackground(new java.awt.Color(204, 204, 204));
+        button_update.setFont(new java.awt.Font("Yu Gothic UI Semibold", 0, 12)); // NOI18N
+        button_update.setText("UPDATE");
+        button_update.addActionListener(this::button_updateActionPerformed);
+        jPanel1.add(button_update, new org.netbeans.lib.awtextra.AbsoluteConstraints(114, 766, 342, 44));
 
-        button_LogIn1.setBackground(new java.awt.Color(204, 204, 204));
-        button_LogIn1.setFont(new java.awt.Font("Yu Gothic UI Semibold", 0, 12)); // NOI18N
-        button_LogIn1.setText("ADD");
-        button_LogIn1.setToolTipText("");
-        jPanel1.add(button_LogIn1, new org.netbeans.lib.awtextra.AbsoluteConstraints(114, 700, 342, 44));
+        button_add.setBackground(new java.awt.Color(204, 204, 204));
+        button_add.setFont(new java.awt.Font("Yu Gothic UI Semibold", 0, 12)); // NOI18N
+        button_add.setText("ADD");
+        button_add.setToolTipText("");
+        button_add.addActionListener(this::button_addActionPerformed);
+        jPanel1.add(button_add, new org.netbeans.lib.awtextra.AbsoluteConstraints(114, 700, 342, 44));
 
-        button_LogIn2.setBackground(new java.awt.Color(204, 204, 204));
-        button_LogIn2.setFont(new java.awt.Font("Yu Gothic UI Semibold", 0, 12)); // NOI18N
-        button_LogIn2.setText("DELETE");
-        jPanel1.add(button_LogIn2, new org.netbeans.lib.awtextra.AbsoluteConstraints(114, 830, 342, 44));
+        button_delete.setBackground(new java.awt.Color(204, 204, 204));
+        button_delete.setFont(new java.awt.Font("Yu Gothic UI Semibold", 0, 12)); // NOI18N
+        button_delete.setText("DELETE");
+        button_delete.addActionListener(this::button_deleteActionPerformed);
+        jPanel1.add(button_delete, new org.netbeans.lib.awtextra.AbsoluteConstraints(114, 830, 342, 44));
 
         getContentPane().add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 580, 1024));
 
@@ -262,6 +369,39 @@ public class BooksManagement extends javax.swing.JFrame {
         txt_quantity.setText(model.getValueAt(row, 3).toString());
     }//GEN-LAST:event_table_bookdetailsMouseClicked
 
+    private void button_addActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_button_addActionPerformed
+        if (addBook() == true){
+            clearTable();
+            setBookDetails();                                                   //this method will take the new information SENT to the database and display it on table
+            JOptionPane.showMessageDialog(this, "Book Added successfully! ✓", "Success",JOptionPane.INFORMATION_MESSAGE);
+        }else{
+            JOptionPane.showMessageDialog(this, "There was an error.", "Error",JOptionPane.ERROR_MESSAGE); 
+        }
+
+    }//GEN-LAST:event_button_addActionPerformed
+
+    private void button_updateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_button_updateActionPerformed
+            if (Update()== true){
+            clearTable();
+            setBookDetails();                                                   //this method will take the new information SENT to the database and display it on table
+            JOptionPane.showMessageDialog(this, "Book updated successfully! ✓", "Success",JOptionPane.INFORMATION_MESSAGE);
+        }else{
+            JOptionPane.showMessageDialog(this, "There was an error.", "Error",JOptionPane.ERROR_MESSAGE); 
+        }
+
+    }//GEN-LAST:event_button_updateActionPerformed
+
+    private void button_deleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_button_deleteActionPerformed
+            if (delete()== true){
+            clearTable();
+            setBookDetails();                                                   //this method will take the new information SENT to the database and display it on table
+            JOptionPane.showMessageDialog(this, "Book deleted successfully! ✓", "Success",JOptionPane.INFORMATION_MESSAGE);
+        }else{
+            JOptionPane.showMessageDialog(this, "There was an error.", "Error",JOptionPane.ERROR_MESSAGE); 
+        }
+
+    }//GEN-LAST:event_button_deleteActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -288,11 +428,11 @@ public class BooksManagement extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton button_LogIn;
-    private javax.swing.JButton button_LogIn1;
-    private javax.swing.JButton button_LogIn2;
+    private javax.swing.JButton button_add;
     private javax.swing.JButton button_back;
+    private javax.swing.JButton button_delete;
     private javax.swing.JButton button_exit;
+    private javax.swing.JButton button_update;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel13;

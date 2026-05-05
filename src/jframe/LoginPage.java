@@ -60,7 +60,6 @@ public class LoginPage extends javax.swing.JFrame {
             ResultSet rs = pst.executeQuery(); //executes the SQL instructions
             
             if (rs.next()){
-                JOptionPane.showMessageDialog(this, "Log in successful. ✓", "Success",JOptionPane.INFORMATION_MESSAGE); //If  checkDuplicateusers = true throws error
                     
                 HomePage home = new HomePage();
                 home.setVisible(true);
