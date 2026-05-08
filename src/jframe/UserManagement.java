@@ -15,40 +15,41 @@ import javax.swing.table.TableModel;
  *
  * @author juans
  */
-public class BooksManagement extends javax.swing.JFrame {
+public class UserManagement extends javax.swing.JFrame {
     
-    private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(BooksManagement.class.getName());
+    private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(UserManagement.class.getName());
 
     /**
      * Creates new form BooksManagement
      */
-    public BooksManagement() {
+    public UserManagement() {
         initComponents();
-        setBookDetails();                                                       //calling method to display details from database in table
+        setUserDetails();                                                       //calling method to display details from database in table
     }
     
 
     
-        //This method displays the book details from database in the table (Reads from database)
-    String bookName, author;
-    int bookId, quantity;
+
+    String name, location;
+    int userID;
     DefaultTableModel model;
-    public void setBookDetails(){
+    
+    //This method displays the book details from database in the table (Reads from database)
+    public void setUserDetails(){
         try {
             Connection con = DBConnection.getConnection();                      //MySQL connection
             Statement st = con.createStatement();                               //SQL executor
-            ResultSet rs = st.executeQuery("select * from book_details");       //MySQL instruction (executes the SELECT and stores ALL results in rs)
+            ResultSet rs = st.executeQuery("select * from user_details");       //MySQL instruction (executes the SELECT and stores ALL results in rs)
             
             // loops row by row — rs.next() moves to the next row from MySQL book_details table
             // when there are no more rows it returns false and the while stops
             while(rs.next()){                                                   
-                String book_id = rs.getString("book_id");                       //from the current row, grabs each column by its name and stores it in temp variables
-                String book_name = rs.getString("book_name");
-                String author = rs.getString("author");
-                int quantity = rs.getInt("quantity");
+                String userID = rs.getString("user_id");                       //from the current row, grabs each column by its name and stores it in temp variables
+                String name = rs.getString("name");
+                String location = rs.getString("location");
                 
-                Object[] obj = {book_id, book_name, author, quantity};          //packages the 4 values into an array in the same order
-                model = (DefaultTableModel) table_bookdetails.getModel();       //controls the rows
+                Object[] obj = {userID, name, location};                        //packages the 4 values into an array in the same order
+                model = (DefaultTableModel) table_userdetails.getModel();       //controls the rows
                 
                 // adds the array as a new row in the visual table
                 // each loop iteration adds a new row with the current book
@@ -64,23 +65,21 @@ public class BooksManagement extends javax.swing.JFrame {
     
     
     //add book method
-    public boolean addBook(){
+    public boolean addUser(){
         Boolean isAdded = false;
-        bookId = Integer.parseInt(txt_bookId.getText());                        //bc get.Text returns a String we have to convert it to Integer bc variable bookId is integer type
-        bookName = txt_bookName.getText();                                      //returns a normal string name
-        author = txt_authorName.getText();
-        quantity = Integer.parseInt(txt_quantity.getText()); 
+        userID = Integer.parseInt(txt_userId.getText());                        //bc get.Text returns a String we have to convert it to Integer bc variable bookId is integer type
+        name = txt_Name.getText();                                              //returns a normal string name
+        location = txt_location.getText();
         
         
         try {                                                                   //query to insert in database
             Connection con = DBConnection.getConnection();
-            String sql = "insert into book_details values(?,?,?,?)";            //mysql instruction
+            String sql = "insert into user_details values(?,?,?)";              //mysql instruction
             PreparedStatement pst = con.prepareStatement(sql);                  //prepared instruction for security
             
-            pst.setInt(1, bookId);                                              //setting values for placeholders
-            pst.setString(2, bookName);
-            pst.setString(3, author);
-            pst.setInt(4, quantity);
+            pst.setInt(1, userID);                                              //setting values for placeholders
+            pst.setString(2, name);
+            pst.setString(3, location);
             
             int rowCount = pst.executeUpdate();
             if (rowCount > 0) {
@@ -101,28 +100,28 @@ public class BooksManagement extends javax.swing.JFrame {
     
     //this method clears the table so the data inserted (new book) wont duplicate each time we add a new book.
     public void clearTable(){
-        DefaultTableModel model = (DefaultTableModel) table_bookdetails.getModel();
+        DefaultTableModel model = (DefaultTableModel) table_userdetails.getModel();
         model.setRowCount(0);
     }
     
     
-    //Update method (to update book details)
-    public boolean Update(){
+    //Update method (to update user details)
+    public boolean updateUser(){
         Boolean isUpdated = false;
-        bookId = Integer.parseInt(txt_bookId.getText());                        //bc get.Text returns a String we have to convert it to Integer bc variable bookId is integer type
-        bookName = txt_bookName.getText();                                      //returns a normal string name
-        author = txt_authorName.getText();
-        quantity = Integer.parseInt(txt_quantity.getText()); 
+        userID = Integer.parseInt(txt_userId.getText());                        //bc get.Text returns a String we have to convert it to Integer bc variable bookId is integer type
+        name = txt_Name.getText();                                              //returns a normal string name
+        location = txt_location.getText();
+
         
         try {
             Connection con = DBConnection.getConnection();
-            String sql = "update book_details set book_name = ?, author = ?, quantity = ? where book_id = ?";  //MySQL query instruction
+            String sql = "update user_details set name = ?, location = ? where user_id = ?";  //MySQL query instruction
             PreparedStatement pst = con.prepareStatement(sql);
             
-            pst.setString(1, bookName);
-            pst.setString(2, author);
-            pst.setInt(3, quantity);
-            pst.setInt(4, bookId);
+            pst.setString(1, name);
+            pst.setString(2, location);
+            pst.setInt(3, userID);
+
            
             int rowCount = pst.executeUpdate();
             if (rowCount > 0) {
@@ -141,17 +140,17 @@ public class BooksManagement extends javax.swing.JFrame {
         //method to delete books
     public boolean delete(){
         boolean isDeleted = false;
-        bookId = Integer.parseInt(txt_bookId.getText());
+        userID = Integer.parseInt(txt_userId.getText());
         
-                try {
+        try {
         Connection con = DBConnection.getConnection();
-        String sql = "delete from book_details where book_id = ? ";              //mysq instruction
+        String sql = "delete from user_details where user_id = ?";              //mysq instruction
         PreparedStatement pst = con.prepareStatement(sql);
         
-        pst.setInt(1, bookId);                                                  
+        pst.setInt(1, userID);                                                  //places the userID value in the placeholder (?), so the SQL instruction is executed at that ID value (and deletes it)
         
         int rowCount = pst.executeUpdate();                                     
-        if (rowCount > 0) {                                                     //if book_id was found, pst.executeUpdate will execute in 1 row, rowCount = 1 (true)
+        if (rowCount > 0) {                                                     //if user_id was found, pst.executeUpdate will execute in 1 row, then rowCount = 1 (true)
             isDeleted = true;
         } else{
             isDeleted = false;
@@ -176,21 +175,19 @@ public class BooksManagement extends javax.swing.JFrame {
 
         jPanel1 = new javax.swing.JPanel();
         button_back = new javax.swing.JButton();
-        txt_bookId = new app.bolivia.swing.JCTextField();
-        txt_bookName = new app.bolivia.swing.JCTextField();
+        txt_userId = new app.bolivia.swing.JCTextField();
+        txt_Name = new app.bolivia.swing.JCTextField();
         jLabel11 = new javax.swing.JLabel();
-        txt_authorName = new app.bolivia.swing.JCTextField();
         jLabel13 = new javax.swing.JLabel();
-        txt_quantity = new app.bolivia.swing.JCTextField();
-        jLabel15 = new javax.swing.JLabel();
         jLabel16 = new javax.swing.JLabel();
         button_update = new javax.swing.JButton();
         button_add = new javax.swing.JButton();
         button_delete = new javax.swing.JButton();
+        txt_location = new app.bolivia.swing.JCTextField();
         jPanel2 = new javax.swing.JPanel();
         button_exit = new javax.swing.JButton();
         jScrollPane3 = new javax.swing.JScrollPane();
-        table_bookdetails = new rojerusan.RSTableMetro();
+        table_userdetails = new rojerusan.RSTableMetro();
         jLabel1 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -213,76 +210,63 @@ public class BooksManagement extends javax.swing.JFrame {
         });
         jPanel1.add(button_back, new org.netbeans.lib.awtextra.AbsoluteConstraints(4, 10, -1, -1));
 
-        txt_bookId.setBackground(new java.awt.Color(51, 51, 51));
-        txt_bookId.setBorder(javax.swing.BorderFactory.createMatteBorder(0, 0, 1, 0, new java.awt.Color(255, 255, 255)));
-        txt_bookId.setForeground(new java.awt.Color(255, 255, 255));
-        txt_bookId.setFont(new java.awt.Font("Microsoft JhengHei UI Light", 0, 18)); // NOI18N
-        txt_bookId.setPhColor(new java.awt.Color(255, 255, 255));
-        txt_bookId.setPlaceholder("Enter Book ID...");
-        jPanel1.add(txt_bookId, new org.netbeans.lib.awtextra.AbsoluteConstraints(114, 220, 340, -1));
+        txt_userId.setBackground(new java.awt.Color(51, 51, 51));
+        txt_userId.setBorder(javax.swing.BorderFactory.createMatteBorder(0, 0, 1, 0, new java.awt.Color(255, 255, 255)));
+        txt_userId.setForeground(new java.awt.Color(255, 255, 255));
+        txt_userId.setFont(new java.awt.Font("Microsoft JhengHei UI Light", 0, 18)); // NOI18N
+        txt_userId.setPhColor(new java.awt.Color(255, 255, 255));
+        txt_userId.setPlaceholder("Enter User ID...");
+        jPanel1.add(txt_userId, new org.netbeans.lib.awtextra.AbsoluteConstraints(114, 220, 340, -1));
 
-        txt_bookName.setBackground(new java.awt.Color(51, 51, 51));
-        txt_bookName.setBorder(javax.swing.BorderFactory.createMatteBorder(0, 0, 1, 0, new java.awt.Color(255, 255, 255)));
-        txt_bookName.setForeground(new java.awt.Color(255, 255, 255));
-        txt_bookName.setFont(new java.awt.Font("Microsoft JhengHei UI Light", 0, 18)); // NOI18N
-        txt_bookName.setPhColor(new java.awt.Color(255, 255, 255));
-        txt_bookName.setPlaceholder("Enter Book Name...");
-        jPanel1.add(txt_bookName, new org.netbeans.lib.awtextra.AbsoluteConstraints(114, 350, 340, -1));
+        txt_Name.setBackground(new java.awt.Color(51, 51, 51));
+        txt_Name.setBorder(javax.swing.BorderFactory.createMatteBorder(0, 0, 1, 0, new java.awt.Color(255, 255, 255)));
+        txt_Name.setForeground(new java.awt.Color(255, 255, 255));
+        txt_Name.setFont(new java.awt.Font("Microsoft JhengHei UI Light", 0, 18)); // NOI18N
+        txt_Name.setPhColor(new java.awt.Color(255, 255, 255));
+        txt_Name.setPlaceholder("Enter Name...");
+        jPanel1.add(txt_Name, new org.netbeans.lib.awtextra.AbsoluteConstraints(114, 350, 340, -1));
 
         jLabel11.setFont(new java.awt.Font("Yu Gothic Light", 1, 20)); // NOI18N
         jLabel11.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel11.setText("Book ID");
+        jLabel11.setText("User ID");
         jPanel1.add(jLabel11, new org.netbeans.lib.awtextra.AbsoluteConstraints(114, 180, 130, 40));
-
-        txt_authorName.setBackground(new java.awt.Color(51, 51, 51));
-        txt_authorName.setBorder(javax.swing.BorderFactory.createMatteBorder(0, 0, 1, 0, new java.awt.Color(255, 255, 255)));
-        txt_authorName.setForeground(new java.awt.Color(255, 255, 255));
-        txt_authorName.setFont(new java.awt.Font("Microsoft JhengHei UI Light", 0, 18)); // NOI18N
-        txt_authorName.setPhColor(new java.awt.Color(255, 255, 255));
-        txt_authorName.setPlaceholder("Enter Author Name...");
-        jPanel1.add(txt_authorName, new org.netbeans.lib.awtextra.AbsoluteConstraints(114, 480, 340, -1));
 
         jLabel13.setFont(new java.awt.Font("Yu Gothic Light", 1, 20)); // NOI18N
         jLabel13.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel13.setText("Author Name");
+        jLabel13.setText("Location");
         jPanel1.add(jLabel13, new org.netbeans.lib.awtextra.AbsoluteConstraints(114, 440, 130, 40));
-
-        txt_quantity.setBackground(new java.awt.Color(51, 51, 51));
-        txt_quantity.setBorder(javax.swing.BorderFactory.createMatteBorder(0, 0, 1, 0, new java.awt.Color(255, 255, 255)));
-        txt_quantity.setForeground(new java.awt.Color(255, 255, 255));
-        txt_quantity.setFont(new java.awt.Font("Microsoft YaHei UI Light", 0, 18)); // NOI18N
-        txt_quantity.setPhColor(new java.awt.Color(255, 255, 255));
-        txt_quantity.setPlaceholder("Enter Quantity...");
-        jPanel1.add(txt_quantity, new org.netbeans.lib.awtextra.AbsoluteConstraints(114, 610, 340, -1));
-
-        jLabel15.setFont(new java.awt.Font("Yu Gothic Light", 1, 20)); // NOI18N
-        jLabel15.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel15.setText("Quantity");
-        jPanel1.add(jLabel15, new org.netbeans.lib.awtextra.AbsoluteConstraints(114, 570, 130, 40));
 
         jLabel16.setFont(new java.awt.Font("Yu Gothic Light", 1, 20)); // NOI18N
         jLabel16.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel16.setText("Book Name");
+        jLabel16.setText("Name");
         jPanel1.add(jLabel16, new org.netbeans.lib.awtextra.AbsoluteConstraints(114, 310, 130, 40));
 
         button_update.setBackground(new java.awt.Color(204, 204, 204));
         button_update.setFont(new java.awt.Font("Yu Gothic UI Semibold", 0, 12)); // NOI18N
         button_update.setText("UPDATE");
         button_update.addActionListener(this::button_updateActionPerformed);
-        jPanel1.add(button_update, new org.netbeans.lib.awtextra.AbsoluteConstraints(114, 766, 342, 44));
+        jPanel1.add(button_update, new org.netbeans.lib.awtextra.AbsoluteConstraints(114, 674, 342, 44));
 
         button_add.setBackground(new java.awt.Color(204, 204, 204));
         button_add.setFont(new java.awt.Font("Yu Gothic UI Semibold", 0, 12)); // NOI18N
         button_add.setText("ADD");
         button_add.setToolTipText("");
         button_add.addActionListener(this::button_addActionPerformed);
-        jPanel1.add(button_add, new org.netbeans.lib.awtextra.AbsoluteConstraints(114, 700, 342, 44));
+        jPanel1.add(button_add, new org.netbeans.lib.awtextra.AbsoluteConstraints(114, 608, 342, 44));
 
         button_delete.setBackground(new java.awt.Color(204, 204, 204));
         button_delete.setFont(new java.awt.Font("Yu Gothic UI Semibold", 0, 12)); // NOI18N
         button_delete.setText("DELETE");
         button_delete.addActionListener(this::button_deleteActionPerformed);
-        jPanel1.add(button_delete, new org.netbeans.lib.awtextra.AbsoluteConstraints(114, 830, 342, 44));
+        jPanel1.add(button_delete, new org.netbeans.lib.awtextra.AbsoluteConstraints(114, 738, 342, 44));
+
+        txt_location.setBackground(new java.awt.Color(51, 51, 51));
+        txt_location.setBorder(javax.swing.BorderFactory.createMatteBorder(0, 0, 1, 0, new java.awt.Color(255, 255, 255)));
+        txt_location.setForeground(new java.awt.Color(255, 255, 255));
+        txt_location.setFont(new java.awt.Font("Microsoft JhengHei UI Light", 0, 18)); // NOI18N
+        txt_location.setPhColor(new java.awt.Color(255, 255, 255));
+        txt_location.setPlaceholder("Enter Address ...");
+        jPanel1.add(txt_location, new org.netbeans.lib.awtextra.AbsoluteConstraints(114, 480, 340, -1));
 
         getContentPane().add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 580, 1024));
 
@@ -304,43 +288,43 @@ public class BooksManagement extends javax.swing.JFrame {
         });
         jPanel2.add(button_exit, new org.netbeans.lib.awtextra.AbsoluteConstraints(1264, 12, 64, -1));
 
-        table_bookdetails.setForeground(new java.awt.Color(255, 255, 255));
-        table_bookdetails.setModel(new javax.swing.table.DefaultTableModel(
+        table_userdetails.setForeground(new java.awt.Color(255, 255, 255));
+        table_userdetails.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
             },
             new String [] {
-                "Book ID", "Name", "Author", "Quantity"
+                "User ID", "Name", "Location"
             }
         ));
-        table_bookdetails.setColorBackgoundHead(new java.awt.Color(181, 181, 181));
-        table_bookdetails.setColorBordeFilas(new java.awt.Color(255, 255, 255));
-        table_bookdetails.setColorBordeHead(new java.awt.Color(181, 181, 181));
-        table_bookdetails.setColorFilasBackgound2(new java.awt.Color(238, 238, 238));
-        table_bookdetails.setColorFilasForeground1(new java.awt.Color(64, 64, 64));
-        table_bookdetails.setColorFilasForeground2(new java.awt.Color(64, 64, 64));
-        table_bookdetails.setColorSelBackgound(new java.awt.Color(255, 186, 118));
-        table_bookdetails.setFont(new java.awt.Font("Yu Gothic UI Light", 0, 12)); // NOI18N
-        table_bookdetails.setFuenteFilas(new java.awt.Font("Yu Gothic UI Semibold", 1, 12)); // NOI18N
-        table_bookdetails.setFuenteHead(new java.awt.Font("Yu Gothic UI Semibold", 1, 15)); // NOI18N
-        table_bookdetails.setGridColor(new java.awt.Color(204, 204, 204));
-        table_bookdetails.setGrosorBordeFilas(0);
-        table_bookdetails.setGrosorBordeHead(0);
-        table_bookdetails.setRowHeight(35);
-        table_bookdetails.setShowGrid(false);
-        table_bookdetails.addMouseListener(new java.awt.event.MouseAdapter() {
+        table_userdetails.setColorBackgoundHead(new java.awt.Color(181, 181, 181));
+        table_userdetails.setColorBordeFilas(new java.awt.Color(255, 255, 255));
+        table_userdetails.setColorBordeHead(new java.awt.Color(181, 181, 181));
+        table_userdetails.setColorFilasBackgound2(new java.awt.Color(238, 238, 238));
+        table_userdetails.setColorFilasForeground1(new java.awt.Color(64, 64, 64));
+        table_userdetails.setColorFilasForeground2(new java.awt.Color(64, 64, 64));
+        table_userdetails.setColorSelBackgound(new java.awt.Color(255, 186, 118));
+        table_userdetails.setFont(new java.awt.Font("Yu Gothic UI Light", 0, 12)); // NOI18N
+        table_userdetails.setFuenteFilas(new java.awt.Font("Yu Gothic UI Semibold", 1, 12)); // NOI18N
+        table_userdetails.setFuenteHead(new java.awt.Font("Yu Gothic UI Semibold", 1, 15)); // NOI18N
+        table_userdetails.setGridColor(new java.awt.Color(204, 204, 204));
+        table_userdetails.setGrosorBordeFilas(0);
+        table_userdetails.setGrosorBordeHead(0);
+        table_userdetails.setRowHeight(35);
+        table_userdetails.setShowGrid(false);
+        table_userdetails.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
-                table_bookdetailsMouseClicked(evt);
+                table_userdetailsMouseClicked(evt);
             }
         });
-        jScrollPane3.setViewportView(table_bookdetails);
+        jScrollPane3.setViewportView(table_userdetails);
 
         jPanel2.add(jScrollPane3, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 145, 1026, 776));
 
         jLabel1.setFont(new java.awt.Font("Yu Gothic UI Semibold", 1, 36)); // NOI18N
         jLabel1.setForeground(new java.awt.Color(102, 102, 102));
-        jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/aaaaaaaa/icons8-books-50.png"))); // NOI18N
-        jLabel1.setText(" Book Management");
+        jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/aaaaaaaa/icons8-user-50.png"))); // NOI18N
+        jLabel1.setText(" User Management");
         jPanel2.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 70, -1, -1));
 
         getContentPane().add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(580, -2, 1328, 1028));
@@ -359,21 +343,20 @@ public class BooksManagement extends javax.swing.JFrame {
         System.exit(0);
     }//GEN-LAST:event_button_exitMouseClicked
 
-    private void table_bookdetailsMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_table_bookdetailsMouseClicked
-        int row = table_bookdetails.getSelectedRow();                           //method to show details in the placeholders
-        TableModel model = table_bookdetails.getModel();
+    private void table_userdetailsMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_table_userdetailsMouseClicked
+        int row = table_userdetails.getSelectedRow();                           //method to show details in the placeholders
+        TableModel model = table_userdetails.getModel();
         
-        txt_bookId.setText(model.getValueAt(row, 0).toString());                //placeholders rewritten (row, column)
-        txt_bookName.setText(model.getValueAt(row, 1).toString());
-        txt_authorName.setText(model.getValueAt(row, 2).toString());
-        txt_quantity.setText(model.getValueAt(row, 3).toString());
-    }//GEN-LAST:event_table_bookdetailsMouseClicked
+        txt_userId.setText(model.getValueAt(row, 0).toString());                //placeholders rewritten (row, column)
+        txt_Name.setText(model.getValueAt(row, 1).toString());
+        txt_location.setText(model.getValueAt(row, 2).toString());
+    }//GEN-LAST:event_table_userdetailsMouseClicked
 
     private void button_addActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_button_addActionPerformed
-        if (addBook() == true){
+        if (addUser()== true){
             clearTable();
-            setBookDetails();                                                   //this method will take the new information SENT to the database and display it on table
-            JOptionPane.showMessageDialog(this, "Book Added successfully! ✓", "Success",JOptionPane.INFORMATION_MESSAGE);
+            setUserDetails();                                                 //this method will take the new information SENT to the database and display it on table
+            JOptionPane.showMessageDialog(this, "User Added successfully! ✓", "Success",JOptionPane.INFORMATION_MESSAGE);
         }else{
             JOptionPane.showMessageDialog(this, "There was an error.", "Error",JOptionPane.ERROR_MESSAGE); 
         }
@@ -381,10 +364,10 @@ public class BooksManagement extends javax.swing.JFrame {
     }//GEN-LAST:event_button_addActionPerformed
 
     private void button_updateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_button_updateActionPerformed
-            if (Update()== true){
+            if (updateUser()== true){
             clearTable();
-            setBookDetails();                                                   //this method will take the new information SENT to the database and display it on table
-            JOptionPane.showMessageDialog(this, "Book updated successfully! ✓", "Success",JOptionPane.INFORMATION_MESSAGE);
+            setUserDetails();                                                   //this method will take the new information SENT to the database and display it on table
+            JOptionPane.showMessageDialog(this, "User updated successfully! ✓", "Success",JOptionPane.INFORMATION_MESSAGE);
         }else{
             JOptionPane.showMessageDialog(this, "There was an error.", "Error",JOptionPane.ERROR_MESSAGE); 
         }
@@ -393,9 +376,9 @@ public class BooksManagement extends javax.swing.JFrame {
 
     private void button_deleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_button_deleteActionPerformed
             if (delete()== true){
-            clearTable();
-            setBookDetails();                                                   //this method will take the new information SENT to the database and display it on table
-            JOptionPane.showMessageDialog(this, "Book deleted successfully! ✓", "Success",JOptionPane.INFORMATION_MESSAGE);
+            clearTable();                                                       //clears the table and then calls the new information from database
+            setUserDetails();                                                   //this method will take the new information SENT to the database and display it on table
+            JOptionPane.showMessageDialog(this, "User deleted successfully! ✓", "Success",JOptionPane.INFORMATION_MESSAGE);
         }else{
             JOptionPane.showMessageDialog(this, "There was an error.", "Error",JOptionPane.ERROR_MESSAGE); 
         }
@@ -424,7 +407,7 @@ public class BooksManagement extends javax.swing.JFrame {
         //</editor-fold>
 
         /* Create and display the form */
-        java.awt.EventQueue.invokeLater(() -> new BooksManagement().setVisible(true));
+        java.awt.EventQueue.invokeLater(() -> new UserManagement().setVisible(true));
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -436,15 +419,13 @@ public class BooksManagement extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel13;
-    private javax.swing.JLabel jLabel15;
     private javax.swing.JLabel jLabel16;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JScrollPane jScrollPane3;
-    private rojerusan.RSTableMetro table_bookdetails;
-    private app.bolivia.swing.JCTextField txt_authorName;
-    private app.bolivia.swing.JCTextField txt_bookId;
-    private app.bolivia.swing.JCTextField txt_bookName;
-    private app.bolivia.swing.JCTextField txt_quantity;
+    private rojerusan.RSTableMetro table_userdetails;
+    private app.bolivia.swing.JCTextField txt_Name;
+    private app.bolivia.swing.JCTextField txt_location;
+    private app.bolivia.swing.JCTextField txt_userId;
     // End of variables declaration//GEN-END:variables
 }
