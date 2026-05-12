@@ -24,13 +24,28 @@ public class IssueBook extends javax.swing.JFrame {
      * Creates new form BooksManagement
      */
     
-    //to change color when selecting object from homepage
+    // to change color when selecting object from the homepage menu (left side bar)
     Color mouseEnterColor = new Color (221,221,221);
     Color mouseExitColor = new Color (255,255,255);
     
     public IssueBook() {
         initComponents();
-                                                            
+        
+        // displays book details from DB when book ID is entered 
+        txt_bookId2.addActionListener(e -> {
+            if (!txt_bookId2.getText().isEmpty()) {
+            getBookDetails();
+           
+    }
+});
+        
+        // displays user details from DB when book ID is entered 
+        txt_Name2.addActionListener(e -> {
+            if (!txt_Name2.getText().isEmpty()) {
+            getUserDetails();
+            
+             }
+});                                                   
         
 //date & time     
 // mostrar la hora inmediatamente al abrir
@@ -52,18 +67,42 @@ timer.start();
         
         try {
             Connection con = DBConnection.getConnection();
-            PreparedStatement pst = con.prepareStatement( "select * from book_details where book_id = ?"); 
+            PreparedStatement pst = con.prepareStatement("select * from book_details where book_id = ?"); 
             pst.setInt(1, bookId);
             ResultSet rs = pst.executeQuery();
             
-            while (rs.next())       //QUEDE AQUI 
-            
+            while (rs.next()) {
+                txt_bookId.setText(rs.getString("book_id"));
+                txt_bookName.setText(rs.getString("book_name"));
+                txt_authorName.setText(rs.getString("author"));
+                txt_quantity.setText(rs.getString("quantity"));
+            }          
+                
         } catch (Exception e) {
-        }
-        
+            e.printStackTrace();
+        }  
     }
     
-    
+        //method to get user details
+    public void getUserDetails(){
+        int userId = Integer.parseInt(txt_Name2.getText());
+        
+        try {
+            Connection con = DBConnection.getConnection();
+            PreparedStatement pst = con.prepareStatement("select * from user_details where user_id = ?"); 
+            pst.setInt(1, userId);
+            ResultSet rs = pst.executeQuery();
+            
+            while (rs.next()) {
+                txt_userId.setText(rs.getString("user_id"));
+                txt_Name.setText(rs.getString("name"));
+                txt_location.setText(rs.getString("location"));
+            }          
+                
+        } catch (Exception e) {
+            e.printStackTrace();
+        }  
+    }
 
 
     /**
@@ -101,7 +140,6 @@ timer.start();
         jLabel39 = new javax.swing.JLabel();
         jPanel24 = new javax.swing.JPanel();
         jLabel35 = new javax.swing.JLabel();
-        txt_bookId2 = new app.bolivia.swing.JCTextField();
         jLabel43 = new javax.swing.JLabel();
         txt_Name2 = new app.bolivia.swing.JCTextField();
         jLabel44 = new javax.swing.JLabel();
@@ -110,6 +148,7 @@ timer.start();
         jLabel46 = new javax.swing.JLabel();
         date_duedate = new rojeru_san.componentes.RSDateChooser();
         button_issuebook = new javax.swing.JButton();
+        txt_bookId2 = new app.bolivia.swing.JCTextField();
         jPanel18 = new javax.swing.JPanel();
         jPanel21 = new javax.swing.JPanel();
         jLabel24 = new javax.swing.JLabel();
@@ -297,16 +336,6 @@ timer.start();
 
         jPanel14.add(jPanel22, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 608, 170));
 
-        txt_bookId2.setBackground(new java.awt.Color(255, 255, 255));
-        txt_bookId2.setBorder(javax.swing.BorderFactory.createMatteBorder(0, 0, 1, 0, new java.awt.Color(219, 219, 219)));
-        txt_bookId2.setForeground(new java.awt.Color(102, 102, 102));
-        txt_bookId2.setFont(new java.awt.Font("Microsoft JhengHei UI Light", 0, 18)); // NOI18N
-        txt_bookId2.setName(""); // NOI18N
-        txt_bookId2.setPhColor(new java.awt.Color(113, 113, 113));
-        txt_bookId2.setPlaceholder("Enter Book ID...");
-        txt_bookId2.setSelectedTextColor(new java.awt.Color(204, 204, 204));
-        jPanel14.add(txt_bookId2, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 288, 346, -1));
-
         jLabel43.setFont(new java.awt.Font("Yu Gothic UI Semibold", 1, 18)); // NOI18N
         jLabel43.setForeground(new java.awt.Color(0, 0, 0));
         jLabel43.setText("Book ID");
@@ -356,6 +385,16 @@ timer.start();
         button_issuebook.setText("ISSUE BOOK");
         button_issuebook.setToolTipText("");
         jPanel14.add(button_issuebook, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 680, 342, 44));
+
+        txt_bookId2.setBackground(new java.awt.Color(255, 255, 255));
+        txt_bookId2.setBorder(javax.swing.BorderFactory.createMatteBorder(0, 0, 1, 0, new java.awt.Color(219, 219, 219)));
+        txt_bookId2.setForeground(new java.awt.Color(102, 102, 102));
+        txt_bookId2.setFont(new java.awt.Font("Microsoft JhengHei UI Light", 0, 18)); // NOI18N
+        txt_bookId2.setName(""); // NOI18N
+        txt_bookId2.setPhColor(new java.awt.Color(113, 113, 113));
+        txt_bookId2.setPlaceholder("Enter Book ID...");
+        txt_bookId2.setSelectedTextColor(new java.awt.Color(204, 204, 204));
+        jPanel14.add(txt_bookId2, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 288, 346, -1));
 
         jPanel2.add(jPanel14, new org.netbeans.lib.awtextra.AbsoluteConstraints(906, 76, 606, 788));
 
@@ -685,6 +724,9 @@ timer.start();
         jPanel17.setBackground(mouseExitColor);
     }//GEN-LAST:event_jPanel17MouseExited
 
+
+    
+    
     /**
      * @param args the command line arguments
      */
