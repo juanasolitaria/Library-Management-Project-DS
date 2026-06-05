@@ -314,6 +314,7 @@ public boolean IssueBook (){
         txt_userId = new app.bolivia.swing.JCTextField();
         jLabel42 = new javax.swing.JLabel();
         lbl_studentError = new javax.swing.JLabel();
+        jLabel17 = new javax.swing.JLabel();
         jPanel3 = new javax.swing.JPanel();
         jPanel13 = new javax.swing.JPanel();
         jLabel16 = new javax.swing.JLabel();
@@ -473,7 +474,7 @@ public boolean IssueBook (){
         lbl_bookError.setText("Book not found");
         jPanel1.add(lbl_bookError, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 725, 166, 40));
 
-        jPanel2.add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(56, 76, 400, 788));
+        jPanel2.add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(56, 120, 400, 788));
 
         jPanel14.setBackground(new java.awt.Color(255, 255, 255));
         jPanel14.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
@@ -558,7 +559,7 @@ public boolean IssueBook (){
         txt_bookId2.setSelectedTextColor(new java.awt.Color(204, 204, 204));
         jPanel14.add(txt_bookId2, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 288, 346, -1));
 
-        jPanel2.add(jPanel14, new org.netbeans.lib.awtextra.AbsoluteConstraints(906, 76, 606, 788));
+        jPanel2.add(jPanel14, new org.netbeans.lib.awtextra.AbsoluteConstraints(906, 120, 606, 788));
 
         jPanel18.setBackground(new java.awt.Color(255, 255, 255));
         jPanel18.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
@@ -628,7 +629,13 @@ public boolean IssueBook (){
         lbl_studentError.setText("User not found");
         jPanel18.add(lbl_studentError, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 725, 174, 40));
 
-        jPanel2.add(jPanel18, new org.netbeans.lib.awtextra.AbsoluteConstraints(482, 76, 400, 788));
+        jPanel2.add(jPanel18, new org.netbeans.lib.awtextra.AbsoluteConstraints(482, 120, 400, 788));
+
+        jLabel17.setFont(new java.awt.Font("Yu Gothic UI Semibold", 1, 36)); // NOI18N
+        jLabel17.setForeground(new java.awt.Color(79, 79, 79));
+        jLabel17.setIcon(new javax.swing.ImageIcon(getClass().getResource("/aaaaaaaa/icons8-box-50.png"))); // NOI18N
+        jLabel17.setText(" Issue Book");
+        jPanel2.add(jLabel17, new org.netbeans.lib.awtextra.AbsoluteConstraints(56, 37, -1, -1));
 
         getContentPane().add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(340, 60, 1566, 964));
 
@@ -694,6 +701,17 @@ public boolean IssueBook (){
         jPanel3.add(jPanel10, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 360, 340, 60));
 
         jPanel9.setBackground(new java.awt.Color(255, 255, 255));
+        jPanel9.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jPanel9MouseClicked(evt);
+            }
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                jPanel9MouseEntered(evt);
+            }
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                jPanel9MouseExited(evt);
+            }
+        });
         jPanel9.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jLabel12.setFont(new java.awt.Font("Yu Gothic UI Light", 0, 19)); // NOI18N
@@ -925,7 +943,20 @@ public boolean IssueBook (){
         
     }//GEN-LAST:event_button_issuebookActionPerformed
 
+    private void jPanel9MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jPanel9MouseClicked
+        ReturnBook returnbook = new ReturnBook();
+        returnbook.setVisible(true);
+        dispose();
+    }//GEN-LAST:event_jPanel9MouseClicked
 
+    private void jPanel9MouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jPanel9MouseEntered
+        jPanel9.setBackground(mouseEnterColor);
+    }//GEN-LAST:event_jPanel9MouseEntered
+
+    private void jPanel9MouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jPanel9MouseExited
+        jPanel9.setBackground(mouseExitColor);
+    }//GEN-LAST:event_jPanel9MouseExited
+ 
     
     
     /**
@@ -966,6 +997,7 @@ public boolean IssueBook (){
     private javax.swing.JLabel jLabel14;
     private javax.swing.JLabel jLabel15;
     private javax.swing.JLabel jLabel16;
+    private javax.swing.JLabel jLabel17;
     private javax.swing.JLabel jLabel18;
     private javax.swing.JLabel jLabel19;
     private javax.swing.JLabel jLabel2;

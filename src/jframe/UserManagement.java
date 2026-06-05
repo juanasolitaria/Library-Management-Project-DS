@@ -389,6 +389,17 @@ timer.start();
         jPanel3.add(jPanel10, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 360, 340, 60));
 
         jPanel9.setBackground(new java.awt.Color(255, 255, 255));
+        jPanel9.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jPanel9MouseClicked(evt);
+            }
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                jPanel9MouseEntered(evt);
+            }
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                jPanel9MouseExited(evt);
+            }
+        });
         jPanel9.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jLabel12.setFont(new java.awt.Font("Yu Gothic UI Light", 0, 19)); // NOI18N
@@ -724,6 +735,21 @@ timer.start();
         jPanel8.setBackground(mouseExitColor);
     }//GEN-LAST:event_jPanel8MouseExited
 
+    private void jPanel9MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jPanel9MouseClicked
+        ReturnBook returnbook = new ReturnBook();
+        returnbook.setVisible(true);
+        dispose();    }//GEN-LAST:event_jPanel9MouseClicked
+
+    private void jPanel9MouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jPanel9MouseEntered
+        jPanel9.setBackground(mouseEnterColor);
+    }//GEN-LAST:event_jPanel9MouseEntered
+
+    private void jPanel9MouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jPanel9MouseExited
+        jPanel9.setBackground(mouseExitColor);
+    }//GEN-LAST:event_jPanel9MouseExited
+
+    
+    
     /**
      * @param args the command line arguments
      */
