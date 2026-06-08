@@ -37,7 +37,7 @@ public class SignUpPage extends javax.swing.JFrame {
         try {
             
             Connection con = DBConnection.getConnection();  
-            String sql = "insert into users(username, password, email, contact) values (?,?,?,?)"; //this is the SQL instruction (as if I were writing inside the SQL console but im doing it from here). (?,?,?,?) Provides placeholder for each input
+            String sql = "insert into admins(username, password, email, contact) values (?,?,?,?)"; //this is the SQL instruction (as if I were writing inside the SQL console but im doing it from here). (?,?,?,?) Provides placeholder for each input
             PreparedStatement pst = con.prepareStatement(sql);  //takes that instruction and prepares the sql instruction for security (prevents sql injection)
             
             pst.setString(1, username);
@@ -91,7 +91,7 @@ public boolean checkDuplicateusers(){
     try {
         Connection con = DBConnection.getConnection(); //SQL connection         
    
-        PreparedStatement pst = con.prepareStatement("select * from users where username = ?"); //sql instruction
+        PreparedStatement pst = con.prepareStatement("select * from admins where username = ?"); //sql instruction
         pst.setString(1, username); //selecting the placeholder
         ResultSet rs = pst.executeQuery();
         if(rs.next() == true){

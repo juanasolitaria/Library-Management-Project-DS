@@ -67,7 +67,7 @@ public class ReturnBook extends javax.swing.JFrame {
             
             ResultSet rs = pst.executeQuery();
             if (rs.next()) {
-                txt_issueID.setText(rs.getString("id"));
+                txt_issueID.setText(rs.getString("issue_id"));
                 txt_bookName.setText(rs.getString("book_name"));
                 txt_user.setText(rs.getString("username"));
                 txt_issuedate.setText(rs.getString("issue_date"));

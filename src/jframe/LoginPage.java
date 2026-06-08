@@ -52,7 +52,7 @@ public class LoginPage extends javax.swing.JFrame {
         try {
             Connection con = DBConnection.getConnection();                      //MySQL connection
             
-            PreparedStatement pst = con.prepareStatement("select * from users where username = ? and password = ?"); //sql instructions prepared 
+            PreparedStatement pst = con.prepareStatement("select * from admins where username = ? and password = ?"); //sql instructions prepared 
             
             pst.setString(1, username);
             pst.setString(2, password);
