@@ -5,6 +5,7 @@
 package jframe;
 
 import java.awt.Color;
+import java.awt.event.ItemEvent;
 import java.sql.Connection;
 import javax.swing.table.DefaultTableModel;
 import java.sql.Statement;
@@ -47,9 +48,7 @@ javax.swing.Timer timer = new javax.swing.Timer(1000, e -> {
 });
 timer.start();
             
-
-    button_reset.setVisible(false);
-    
+   
     }
 
     
@@ -57,7 +56,6 @@ timer.start();
     
     //This method displays all the *issue details* from database in the table (Reads from database)
     public void setIssueBooksToTable(){
-        button_reset.setVisible(false);
         try {
             Connection con = DBConnection.getConnection();                      //MySQL connection
             Statement st = con.createStatement();                               //SQL executor
@@ -72,6 +70,15 @@ timer.start();
                 String IssueDate = rs.getString("issue_date");
                 String DueDate = rs.getString("due_date");
                 String Status = rs.getString("status");
+                
+                //overdue condition
+                if (Status.equals("pending")) {
+                    java.sql.Date dueDate = rs.getDate("due_date");
+                    java.sql.Date today = new java.sql.Date(System.currentTimeMillis());
+                    if (dueDate.before(today)) {
+                        Status = "overdue";
+                    }
+                }
                 
                 Object[] obj = {IssueId, BookName, user, IssueDate, DueDate, Status};                        //packages the 4 values into an array in the same order
                 model = (DefaultTableModel) table_records.getModel();           //controls the rows
@@ -124,6 +131,15 @@ public void search() {
             String IssueDate = rs.getString("issue_date");
             String DueDate = rs.getString("due_date");
             String Status = rs.getString("status");
+            
+                //overdue condition
+                if (Status.equals("pending")) {
+                    java.sql.Date dueDate = rs.getDate("due_date");
+                    java.sql.Date today = new java.sql.Date(System.currentTimeMillis());
+                    if (dueDate.before(today)) {
+                        Status = "overdue";
+                    }
+                }            
 
             Object[] obj = {IssueId, BookName, user, IssueDate, DueDate, Status};
             model = (DefaultTableModel) table_records.getModel();
@@ -139,6 +155,97 @@ public void search() {
     }
 }
 
+//pending method
+    public void Pending(){
+        try {
+            Connection con = DBConnection.getConnection();                      //MySQL connection
+            Statement st = con.createStatement();                               //SQL executor
+            ResultSet rs = st.executeQuery("SELECT * FROM issue_book_details WHERE status = 'pending' AND due_date >= CURDATE()"); //MySQL instruction (executes the SELECT and stores ALL results in rs)
+            
+            // loops row by row — rs.next() moves to the next row from MySQL book_details table
+            // when there are no more rows it returns false and the while stops
+            while(rs.next()){  
+                String IssueId = rs.getString("issue_id");
+                String BookName = rs.getString("book_name");                    //from the current row, grabs each column by its name and stores it in temp variables
+                String user = rs.getString("username");
+                String IssueDate = rs.getString("issue_date");
+                String DueDate = rs.getString("due_date");
+                String Status = rs.getString("status");
+                              
+                
+                Object[] obj = {IssueId, BookName, user, IssueDate, DueDate, Status};                        //packages the 4 values into an array in the same order
+                model = (DefaultTableModel) table_records.getModel();           //controls the rows
+                
+                // adds the array as a new row in the visual table
+                // each loop iteration adds a new row with the current book
+                model.addRow(obj);
+            }
+            
+        } catch (Exception e) {
+            // if something fails (DB off, table doesn't exist, etc)
+            // prints the error in console instead of crashing the program
+            e.printStackTrace();
+        }
+} 
+    
+//returned method
+    public void Returned(){
+        try {
+            Connection con = DBConnection.getConnection();                      //MySQL connection
+            Statement st = con.createStatement();                               //SQL executor
+            ResultSet rs = st.executeQuery("select * from issue_book_details where status = '"+"returned"+"'"); //MySQL instruction (executes the SELECT and stores ALL results in rs)
+            
+            // loops row by row — rs.next() moves to the next row from MySQL book_details table
+            // when there are no more rows it returns false and the while stops
+            while(rs.next()){  
+                String IssueId = rs.getString("issue_id");
+                String BookName = rs.getString("book_name");                    //from the current row, grabs each column by its name and stores it in temp variables
+                String user = rs.getString("username");
+                String IssueDate = rs.getString("issue_date");
+                String DueDate = rs.getString("due_date");
+                String Status = rs.getString("status");
+                              
+                
+                Object[] obj = {IssueId, BookName, user, IssueDate, DueDate, Status};                        //packages the 4 values into an array in the same order
+                model = (DefaultTableModel) table_records.getModel();           //controls the rows
+                
+                // adds the array as a new row in the visual table
+                // each loop iteration adds a new row with the current book
+                model.addRow(obj);
+            }
+            
+        } catch (Exception e) {
+            // if something fails (DB off, table doesn't exist, etc)
+            // prints the error in console instead of crashing the program
+            e.printStackTrace();
+        }
+} 
+
+//method to show overdue users    
+    public void Overdue(){
+    try {
+        Connection con = DBConnection.getConnection();
+        Statement st = con.createStatement();
+        ResultSet rs = st.executeQuery("SELECT * FROM issue_book_details WHERE status = 'pending' AND due_date < CURDATE()");
+        
+        while(rs.next()){  
+            String IssueId = rs.getString("issue_id");
+            String BookName = rs.getString("book_name");
+            String user = rs.getString("username");
+            String IssueDate = rs.getString("issue_date");
+            String DueDate = rs.getString("due_date");
+            String Status = "overdue";                                          // siempre overdue en este método
+            
+            Object[] obj = {IssueId, BookName, user, IssueDate, DueDate, Status};
+            model = (DefaultTableModel) table_records.getModel();
+            model.addRow(obj);
+        }
+        
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+}
+    
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -154,15 +261,17 @@ public void search() {
         jPanel15 = new javax.swing.JPanel();
         jLabel36 = new javax.swing.JLabel();
         date_duedate = new rojeru_san.componentes.RSDateChooser();
-        jLabel38 = new javax.swing.JLabel();
         date_issuedate = new rojeru_san.componentes.RSDateChooser();
         button_search = new javax.swing.JButton();
+        jLabel39 = new javax.swing.JLabel();
         jPanel2 = new javax.swing.JPanel();
         jLabel22 = new javax.swing.JLabel();
         jPanel16 = new javax.swing.JPanel();
         jScrollPane3 = new javax.swing.JScrollPane();
         table_records = new rojerusan.RSTableMetro();
-        button_reset = new javax.swing.JButton();
+        jLabel38 = new javax.swing.JLabel();
+        comboBox_filter = new javax.swing.JComboBox<>();
+        button_clear = new javax.swing.JButton();
         jPanel3 = new javax.swing.JPanel();
         jPanel13 = new javax.swing.JPanel();
         jLabel17 = new javax.swing.JLabel();
@@ -229,11 +338,6 @@ public void search() {
         date_duedate.setColorForeground(new java.awt.Color(141, 141, 141));
         jPanel1.add(date_duedate, new org.netbeans.lib.awtextra.AbsoluteConstraints(644, 74, 308, -1));
 
-        jLabel38.setFont(new java.awt.Font("Yu Gothic UI Semibold", 1, 18)); // NOI18N
-        jLabel38.setForeground(new java.awt.Color(0, 0, 0));
-        jLabel38.setText("Issue Date:");
-        jPanel1.add(jLabel38, new org.netbeans.lib.awtextra.AbsoluteConstraints(26, 72, 130, 40));
-
         date_issuedate.setColorBackground(new java.awt.Color(141, 141, 141));
         date_issuedate.setColorButtonHover(new java.awt.Color(146, 202, 246));
         date_issuedate.setColorForeground(new java.awt.Color(141, 141, 141));
@@ -246,6 +350,11 @@ public void search() {
         button_search.setToolTipText("");
         button_search.addActionListener(this::button_searchActionPerformed);
         jPanel1.add(button_search, new org.netbeans.lib.awtextra.AbsoluteConstraints(1054, 70, 342, 44));
+
+        jLabel39.setFont(new java.awt.Font("Yu Gothic UI Semibold", 1, 18)); // NOI18N
+        jLabel39.setForeground(new java.awt.Color(0, 0, 0));
+        jLabel39.setText("Issue Date:");
+        jPanel1.add(jLabel39, new org.netbeans.lib.awtextra.AbsoluteConstraints(26, 72, 130, 40));
 
         getContentPane().add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(394, 156, 1460, 132));
 
@@ -289,16 +398,24 @@ public void search() {
 
         jPanel2.add(jScrollPane3, new org.netbeans.lib.awtextra.AbsoluteConstraints(24, 74, 1384, 592));
 
-        button_reset.setBackground(new java.awt.Color(51, 51, 51));
-        button_reset.setFont(new java.awt.Font("Yu Gothic UI Light", 0, 24)); // NOI18N
-        button_reset.setForeground(new java.awt.Color(255, 255, 255));
-        button_reset.setText("<html><font color='#a8cdff'> <u>Reset</u></html>\n");
-        button_reset.setActionCommand("<html><font color='#a8c6ff'> <u>Reset</u></html>\n");
-        button_reset.setBorderPainted(false);
-        button_reset.setContentAreaFilled(false);
-        button_reset.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-        button_reset.addActionListener(this::button_resetActionPerformed);
-        jPanel2.add(button_reset, new org.netbeans.lib.awtextra.AbsoluteConstraints(1330, 32, 90, -1));
+        jLabel38.setFont(new java.awt.Font("Yu Gothic UI Semibold", 1, 12)); // NOI18N
+        jLabel38.setIcon(new javax.swing.ImageIcon(getClass().getResource("/aaaaaaaa/icons8-slider-21.png"))); // NOI18N
+        jLabel38.setText("Filter");
+        jLabel38.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        jPanel2.add(jLabel38, new org.netbeans.lib.awtextra.AbsoluteConstraints(1230, 28, 74, 40));
+
+        comboBox_filter.setFont(new java.awt.Font("Yu Gothic UI Semibold", 1, 12)); // NOI18N
+        comboBox_filter.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "‎", "Pending", "Returned", "Overdue" }));
+        comboBox_filter.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        comboBox_filter.addItemListener(this::comboBox_filterItemStateChanged);
+        jPanel2.add(comboBox_filter, new org.netbeans.lib.awtextra.AbsoluteConstraints(1216, 26, 100, 42));
+
+        button_clear.setFont(new java.awt.Font("Yu Gothic UI Semibold", 1, 12)); // NOI18N
+        button_clear.setIcon(new javax.swing.ImageIcon(getClass().getResource("/aaaaaaaa/icons8-rotate-21.png"))); // NOI18N
+        button_clear.setText("Clear");
+        button_clear.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        button_clear.addActionListener(this::button_clearActionPerformed);
+        jPanel2.add(button_clear, new org.netbeans.lib.awtextra.AbsoluteConstraints(1322, 26, 86, 42));
 
         getContentPane().add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(394, 308, 1460, 694));
 
@@ -640,16 +757,35 @@ public void search() {
         } else {
             clearTable();
             search();
-            button_reset.setVisible(true);
         }
     }//GEN-LAST:event_button_searchActionPerformed
 
-    private void button_resetActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_button_resetActionPerformed
+    private void comboBox_filterItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_comboBox_filterItemStateChanged
+        if (evt.getStateChange() == ItemEvent.SELECTED) {
+        String selected = (String) comboBox_filter.getSelectedItem();
+        
+        switch (selected) {
+            case "Pending":
+                clearTable();
+                Pending();
+                break;
+            case "Returned":
+                clearTable();
+                Returned();
+                break;
+            case "Overdue":
+                clearTable();
+                Overdue();
+                break;
+        }
+        comboBox_filter.setSelectedIndex(0);                                    // reset combo to blank item after selection
+        }
+    }//GEN-LAST:event_comboBox_filterItemStateChanged
+
+    private void button_clearActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_button_clearActionPerformed
         clearTable();
         setIssueBooksToTable();
-        date_issuedate.setDatoFecha(null);
-        date_duedate.setDatoFecha(null);
-    }//GEN-LAST:event_button_resetActionPerformed
+    }//GEN-LAST:event_button_clearActionPerformed
    
     
     
@@ -679,9 +815,10 @@ public void search() {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton button_clear;
     private javax.swing.JButton button_exit1;
-    private javax.swing.JButton button_reset;
     private javax.swing.JButton button_search;
+    private javax.swing.JComboBox<String> comboBox_filter;
     private rojeru_san.componentes.RSDateChooser date_duedate;
     private rojeru_san.componentes.RSDateChooser date_issuedate;
     private app.bolivia.swing.JCTextField jCTextField1;
@@ -707,6 +844,7 @@ public void search() {
     private javax.swing.JLabel jLabel36;
     private javax.swing.JLabel jLabel37;
     private javax.swing.JLabel jLabel38;
+    private javax.swing.JLabel jLabel39;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
