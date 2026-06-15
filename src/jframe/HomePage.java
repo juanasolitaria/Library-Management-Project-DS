@@ -6,10 +6,14 @@ import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import java.awt.Color;
 import java.awt.BorderLayout;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.Statement;
 import org.jfree.chart.plot.RingPlot;
 import org.jfree.data.general.DefaultPieDataset;
 import javax.swing.JLabel;
 import javax.swing.Timer;
+import javax.swing.table.DefaultTableModel;
 
 /**
  *
@@ -26,14 +30,21 @@ public class HomePage extends javax.swing.JFrame {
     //to change color when selecting object from homepage
     Color mouseEnterColor = new Color (221,221,221);
     Color mouseExitColor = new Color (255,255,255);
+    DefaultTableModel model;
+    double valAvailable, valIssued, valOverdue;
+    
     
     public HomePage() {
         initComponents();
         showPieChart.setLayout(new BorderLayout());
         showPieChart();                                                                         //calling the piechart method
         updateLegend();                                                                       
-        jScrollPane2.getVerticalScrollBar().setPreferredSize(new java.awt.Dimension(0, 0));     //to scroll on homepage tables
-        jScrollPane3.getVerticalScrollBar().setPreferredSize(new java.awt.Dimension(0, 0));
+        jScrollPane2.getVerticalScrollBar().setPreferredSize(new java.awt.Dimension(7, 7));     //to edit scroll bar on tables
+        jScrollPane3.getVerticalScrollBar().setPreferredSize(new java.awt.Dimension(7, 7));
+        setUserDetails();
+        setBookDetails();
+        setDataToCards();
+        jLabel6.setText("Welcome, " + Session.loggedInUser);
         
         //date & time
         
@@ -50,42 +61,71 @@ timer.start();
         
     }
     
-public void showPieChart(){                                                                    //piechart method (STATIC FOR NOW)
+public void showPieChart(){
+    
+    double returnedBooks = 0;
+    double pendingBooks = 0;
+    double overdueBooks = 0;
+    
+    try {
+        Connection con = DBConnection.getConnection();
+        Statement st = con.createStatement();
+        ResultSet rs;
+        
+        // Returned
+        rs = st.executeQuery("SELECT COUNT(*) AS total FROM issue_book_details WHERE status = 'returned'");
+        if (rs.next()) {
+            returnedBooks = rs.getDouble("total");
+        }
+        
+        // Pending (not overdue)
+        rs = st.executeQuery("SELECT COUNT(*) AS total FROM issue_book_details WHERE status = 'pending' AND due_date >= CURDATE()");
+        if (rs.next()) {
+            pendingBooks = rs.getDouble("total");
+        }
+        
+        // Overdue
+        rs = st.executeQuery("SELECT COUNT(*) AS total FROM issue_book_details WHERE status = 'pending' AND due_date < CURDATE()");
+        if (rs.next()) {
+            overdueBooks = rs.getDouble("total");
+        }
+        
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+    
+    this.valAvailable = returnedBooks;
+    this.valIssued = pendingBooks;
+    this.valOverdue = overdueBooks;
     
     DefaultPieDataset dataset = new DefaultPieDataset();
-    dataset.setValue("Available Books", 45.0);
-    dataset.setValue("Issued Books", 30.0);
-    dataset.setValue("Overdue Books", 15.0);
-    dataset.setValue("Lost Books", 10.0);
+    dataset.setValue("Returned Books", returnedBooks);
+    dataset.setValue("Pending Books", pendingBooks);
+    dataset.setValue("Overdue Books", overdueBooks);
     
     JFreeChart pieChart = ChartFactory.createRingChart(
-        "",           // sin titulo
+        "",
         dataset,
-        false,        // sin leyenda arriba
+        false,
         true,
         false
     );
     
     RingPlot plot = (RingPlot) pieChart.getPlot();
     
-    // fondo limpio
     pieChart.setBackgroundPaint(new Color(255,255,255));
     plot.setBackgroundPaint(new Color(255,255,255));                                
     plot.setOutlinePaint(new Color(255,255,255));
     plot.setShadowPaint(null);
-    plot.setSectionDepth(0.50); // grosor del anillo
+    plot.setSectionDepth(0.50);
     
-    // colores bonitos como en el ejemplo
-    plot.setSectionPaint("Available Books", new Color(72, 199, 173));   // teal
-    plot.setSectionPaint("Issued Books", new Color(255, 107, 139));     // rosa
-    plot.setSectionPaint("Overdue Books", new Color(149, 117, 205));    // morado
-    plot.setSectionPaint("Lost Books", new Color(100, 181, 246));       // azul
+    plot.setSectionPaint("Returned Books", new Color(72, 199, 173));
+    plot.setSectionPaint("Pending Books", new Color(255, 107, 139));
+    plot.setSectionPaint("Overdue Books", new Color(149, 117, 205));
     
-    // quitar bordes entre secciones
     plot.setBaseSectionOutlinePaint(new Color(204, 204, 204));
     plot.setBaseSectionOutlineStroke(new java.awt.BasicStroke(0f));
     
-    // quitar labels del chart
     plot.setLabelGenerator(null);
     
     ChartPanel chartPanel = new ChartPanel(pieChart);
@@ -96,29 +136,26 @@ public void showPieChart(){                                                     
 }
 
 
-public void updateLegend(){                                                                 //method for tags (STATIC FOR NOW)
+public void updateLegend(){
     panelLegend.removeAll();
     panelLegend.setLayout(null);
     
-    String[] names = {"Available Books", "Issued Books", "Overdue Books", "Lost Books"};
+    String[] names = {"Returned Books", "Pending Books", "Overdue Books"};
     Color[] colors = {
         new Color(72, 199, 173),
         new Color(255, 107, 139),
-        new Color(149, 117, 205),
-        new Color(100, 181, 246)
+        new Color(149, 117, 205)
     };
-    double total = 45.0 + 30.0 + 15.0 + 10.0;
-    double[] values = {45.0, 30.0, 15.0, 10.0};
+    double total = valAvailable + valIssued + valOverdue;
+    double[] values = {valAvailable, valIssued, valOverdue};
     
     for(int i = 0; i < names.length; i++){
-        // cuadrito de color
         JLabel colorBox = new JLabel();
         colorBox.setBackground(colors[i]);
         colorBox.setOpaque(true);
         colorBox.setBounds(10, i * 40 + 10, 14, 14);
         
-        // texto con porcentaje
-        int percent = (int)((values[i] / total) * 100);
+        int percent = total == 0 ? 0 : (int)((values[i] / total) * 100);
         JLabel text = new JLabel(names[i] + "   " + percent + "%");
         text.setFont(new java.awt.Font("Yu Gothic UI Light", 0, 12));
         text.setBounds(30, i * 40 + 5, 200, 24);
@@ -205,8 +242,93 @@ public void showBarChart(){
 }
 */
  
-
+    //This method displays the user details from database in the table (Reads from database)
+    public void setUserDetails(){
+        try {
+            Connection con = DBConnection.getConnection();                      //MySQL connection
+            Statement st = con.createStatement();                               //SQL executor
+            ResultSet rs = st.executeQuery("select * from user_details");       //MySQL instruction (executes the SELECT and stores ALL results in rs)
+            
+            // loops row by row — rs.next() moves to the next row from MySQL book_details table
+            // when there are no more rows it returns false and the while stops
+            while(rs.next()){                                                   
+                String userID = rs.getString("user_id");                       //from the current row, grabs each column by its name and stores it in temp variables
+                String name = rs.getString("name");
+                String location = rs.getString("location");
+                
+                Object[] obj = {userID, name, location};                        //packages the 4 values into an array in the same order
+                model = (DefaultTableModel) table_users.getModel();       //controls the rows
+                
+                // adds the array as a new row in the visual table
+                // each loop iteration adds a new row with the current book
+                model.addRow(obj);
+            }
+            
+        } catch (Exception e) {
+            // if something fails (DB off, table doesn't exist, etc)
+            // prints the error in console instead of crashing the program
+            e.printStackTrace();
+        }
+}
     
+    //This method displays the book details from database in the table (Reads from database)    
+        public void setBookDetails(){
+        try {
+            Connection con = DBConnection.getConnection();                      //MySQL connection
+            Statement st = con.createStatement();                               //SQL executor
+            ResultSet rs = st.executeQuery("select * from book_details");       //MySQL instruction (executes the SELECT and stores ALL results in rs)
+            
+            // loops row by row — rs.next() moves to the next row from MySQL book_details table
+            // when there are no more rows it returns false and the while stops
+            while(rs.next()){                                                   
+                String book_id = rs.getString("book_id");                       //from the current row, grabs each column by its name and stores it in temp variables
+                String book_name = rs.getString("book_name");
+                String author = rs.getString("author");
+                int quantity = rs.getInt("quantity");
+                
+                Object[] obj = {book_id, book_name, author, quantity};          //packages the 4 values into an array in the same order
+                model = (DefaultTableModel) table_bookdetails.getModel();       //controls the rows
+                
+                // adds the array as a new row in the visual table
+                // each loop iteration adds a new row with the current book
+                model.addRow(obj);
+            }
+            
+        } catch (Exception e) {
+            // if something fails (DB off, table doesn't exist, etc)
+            // prints the error in console instead of crashing the program
+            e.printStackTrace();
+        }
+}
+        
+public void setDataToCards(){
+    try {
+        Connection con = DBConnection.getConnection();
+        Statement st = con.createStatement();
+        ResultSet rs;
+        
+        // Number of Users
+        rs = st.executeQuery("SELECT COUNT(*) AS total FROM user_details");
+        if (rs.next()) {
+            lbl_numberofusers.setText(rs.getString("total"));
+        }
+        
+        // Number of Books
+        rs = st.executeQuery("SELECT COUNT(*) AS total FROM book_details");
+        if (rs.next()) {
+            lbl_numberofbooks.setText(rs.getString("total"));
+        }
+        
+        // Issued Books (only pending = currently loaned out)
+        rs = st.executeQuery("SELECT COUNT(*) AS total FROM issue_book_details WHERE status = 'pending'");
+        if (rs.next()) {
+            lbl_issuedbooks.setText(rs.getString("total"));
+        }
+        
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+}
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -227,12 +349,6 @@ public void showBarChart(){
         jPanel3 = new javax.swing.JPanel();
         jPanel13 = new javax.swing.JPanel();
         jLabel16 = new javax.swing.JLabel();
-        jPanel12 = new javax.swing.JPanel();
-        jLabel15 = new javax.swing.JLabel();
-        jLabel32 = new javax.swing.JLabel();
-        jPanel11 = new javax.swing.JPanel();
-        jLabel14 = new javax.swing.JLabel();
-        jLabel31 = new javax.swing.JLabel();
         jPanel10 = new javax.swing.JPanel();
         jLabel13 = new javax.swing.JLabel();
         jLabel30 = new javax.swing.JLabel();
@@ -257,26 +373,26 @@ public void showBarChart(){
         jPanel16 = new javax.swing.JPanel();
         jLabel23 = new javax.swing.JLabel();
         jLabel24 = new javax.swing.JLabel();
-        jLabel25 = new javax.swing.JLabel();
+        lbl_issuedbooks = new javax.swing.JLabel();
         jPanel15 = new javax.swing.JPanel();
         jLabel20 = new javax.swing.JLabel();
         jLabel21 = new javax.swing.JLabel();
-        jLabel22 = new javax.swing.JLabel();
+        lbl_numberofbooks = new javax.swing.JLabel();
         jPanel2 = new javax.swing.JPanel();
         jLabel17 = new javax.swing.JLabel();
         jLabel18 = new javax.swing.JLabel();
-        jLabel19 = new javax.swing.JLabel();
+        lbl_numberofusers = new javax.swing.JLabel();
         jLabel26 = new javax.swing.JLabel();
-        jScrollPane2 = new javax.swing.JScrollPane();
-        rSTableMetro2 = new rojerusan.RSTableMetro();
         jLabel27 = new javax.swing.JLabel();
         showPieChart = new javax.swing.JPanel();
         panelLegend = new javax.swing.JPanel();
         jLabel35 = new javax.swing.JLabel();
         jScrollPane3 = new javax.swing.JScrollPane();
-        rSTableMetro3 = new rojerusan.RSTableMetro();
+        table_bookdetails = new rojerusan.RSTableMetro();
         jLabel36 = new javax.swing.JLabel();
         jPanel4 = new javax.swing.JPanel();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        table_users = new rojerusan.RSTableMetro();
         jPanel18 = new javax.swing.JPanel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -328,6 +444,12 @@ public void showBarChart(){
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 jPanel13MouseClicked(evt);
             }
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                jPanel13MouseEntered(evt);
+            }
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                jPanel13MouseExited(evt);
+            }
         });
         jPanel13.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
@@ -338,35 +460,18 @@ public void showBarChart(){
 
         jPanel3.add(jPanel13, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 903, 340, 60));
 
-        jPanel12.setBackground(new java.awt.Color(255, 255, 255));
-        jPanel12.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
-
-        jLabel15.setFont(new java.awt.Font("Yu Gothic UI Light", 0, 19)); // NOI18N
-        jLabel15.setText("Defaulter List");
-        jPanel12.add(jLabel15, new org.netbeans.lib.awtextra.AbsoluteConstraints(14, 16, -1, -1));
-
-        jLabel32.setFont(new java.awt.Font("Yu Gothic UI Light", 0, 24)); // NOI18N
-        jLabel32.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel32.setIcon(new javax.swing.ImageIcon(getClass().getResource("/aaaaaaaa/icons8-list-view-15.png"))); // NOI18N
-        jPanel12.add(jLabel32, new org.netbeans.lib.awtextra.AbsoluteConstraints(304, 22, -1, -1));
-
-        jPanel3.add(jPanel12, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 480, 340, 60));
-
-        jPanel11.setBackground(new java.awt.Color(255, 255, 255));
-        jPanel11.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
-
-        jLabel14.setFont(new java.awt.Font("Yu Gothic UI Light", 0, 19)); // NOI18N
-        jLabel14.setText("View Issued Books ");
-        jPanel11.add(jLabel14, new org.netbeans.lib.awtextra.AbsoluteConstraints(14, 14, -1, -1));
-
-        jLabel31.setFont(new java.awt.Font("Yu Gothic UI Light", 0, 24)); // NOI18N
-        jLabel31.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel31.setIcon(new javax.swing.ImageIcon(getClass().getResource("/aaaaaaaa/icons8-love-book-15.png"))); // NOI18N
-        jPanel11.add(jLabel31, new org.netbeans.lib.awtextra.AbsoluteConstraints(302, 24, -1, -1));
-
-        jPanel3.add(jPanel11, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 420, 340, 60));
-
         jPanel10.setBackground(new java.awt.Color(255, 255, 255));
+        jPanel10.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jPanel10MouseClicked(evt);
+            }
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                jPanel10MouseEntered(evt);
+            }
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                jPanel10MouseExited(evt);
+            }
+        });
         jPanel10.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jLabel13.setFont(new java.awt.Font("Yu Gothic UI Light", 0, 19)); // NOI18N
@@ -533,10 +638,10 @@ public void showBarChart(){
         jLabel24.setText("Issued Books");
         jPanel16.add(jLabel24, new org.netbeans.lib.awtextra.AbsoluteConstraints(58, 96, -1, -1));
 
-        jLabel25.setFont(new java.awt.Font("Yu Gothic UI Semibold", 1, 36)); // NOI18N
-        jLabel25.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel25.setText("10");
-        jPanel16.add(jLabel25, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 160, -1, -1));
+        lbl_issuedbooks.setFont(new java.awt.Font("Yu Gothic UI Semibold", 1, 36)); // NOI18N
+        lbl_issuedbooks.setForeground(new java.awt.Color(255, 255, 255));
+        lbl_issuedbooks.setText("10");
+        jPanel16.add(lbl_issuedbooks, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 160, -1, -1));
 
         jPanel14.add(jPanel16, new org.netbeans.lib.awtextra.AbsoluteConstraints(1060, 80, 440, 280));
 
@@ -554,10 +659,10 @@ public void showBarChart(){
         jLabel21.setText("Number of Books ");
         jPanel15.add(jLabel21, new org.netbeans.lib.awtextra.AbsoluteConstraints(52, 92, -1, -1));
 
-        jLabel22.setFont(new java.awt.Font("Yu Gothic UI Semibold", 1, 36)); // NOI18N
-        jLabel22.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel22.setText("10");
-        jPanel15.add(jLabel22, new org.netbeans.lib.awtextra.AbsoluteConstraints(54, 156, -1, -1));
+        lbl_numberofbooks.setFont(new java.awt.Font("Yu Gothic UI Semibold", 1, 36)); // NOI18N
+        lbl_numberofbooks.setForeground(new java.awt.Color(255, 255, 255));
+        lbl_numberofbooks.setText("10");
+        jPanel15.add(lbl_numberofbooks, new org.netbeans.lib.awtextra.AbsoluteConstraints(54, 156, -1, -1));
 
         jPanel14.add(jPanel15, new org.netbeans.lib.awtextra.AbsoluteConstraints(552, 80, 440, 280));
 
@@ -575,10 +680,10 @@ public void showBarChart(){
         jLabel18.setText("Number of Users ");
         jPanel2.add(jLabel18, new org.netbeans.lib.awtextra.AbsoluteConstraints(46, 84, -1, -1));
 
-        jLabel19.setFont(new java.awt.Font("Yu Gothic UI Semibold", 1, 36)); // NOI18N
-        jLabel19.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel19.setText("10");
-        jPanel2.add(jLabel19, new org.netbeans.lib.awtextra.AbsoluteConstraints(48, 148, -1, -1));
+        lbl_numberofusers.setFont(new java.awt.Font("Yu Gothic UI Semibold", 1, 36)); // NOI18N
+        lbl_numberofusers.setForeground(new java.awt.Color(255, 255, 255));
+        lbl_numberofusers.setText("10");
+        jPanel2.add(lbl_numberofusers, new org.netbeans.lib.awtextra.AbsoluteConstraints(48, 148, -1, -1));
 
         jPanel14.add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(44, 80, 440, 280));
 
@@ -588,42 +693,11 @@ public void showBarChart(){
         jLabel26.setText("Issued Books Details");
         jPanel14.add(jLabel26, new org.netbeans.lib.awtextra.AbsoluteConstraints(1075, 385, -1, -1));
 
-        rSTableMetro2.setForeground(new java.awt.Color(255, 255, 255));
-        rSTableMetro2.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-                {"1", "ABC", "BCS", "CSS"},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
-            },
-            new String [] {
-                "User ID", "Name", "Location", "Book Issued"
-            }
-        ));
-        rSTableMetro2.setColorBackgoundHead(new java.awt.Color(181, 181, 181));
-        rSTableMetro2.setColorBordeFilas(new java.awt.Color(255, 255, 255));
-        rSTableMetro2.setColorBordeHead(new java.awt.Color(181, 181, 181));
-        rSTableMetro2.setColorFilasBackgound2(new java.awt.Color(225, 225, 225));
-        rSTableMetro2.setColorFilasForeground1(new java.awt.Color(51, 51, 51));
-        rSTableMetro2.setColorFilasForeground2(new java.awt.Color(255, 255, 255));
-        rSTableMetro2.setColorSelBackgound(new java.awt.Color(154, 202, 241));
-        rSTableMetro2.setFont(new java.awt.Font("Yu Gothic UI Light", 0, 12)); // NOI18N
-        rSTableMetro2.setFuenteFilas(new java.awt.Font("Yu Gothic UI Semibold", 1, 12)); // NOI18N
-        rSTableMetro2.setFuenteHead(new java.awt.Font("Yu Gothic UI Semibold", 1, 15)); // NOI18N
-        rSTableMetro2.setGridColor(new java.awt.Color(204, 204, 204));
-        rSTableMetro2.setGrosorBordeFilas(0);
-        rSTableMetro2.setGrosorBordeHead(0);
-        rSTableMetro2.setRowHeight(35);
-        rSTableMetro2.setShowGrid(false);
-        jScrollPane2.setViewportView(rSTableMetro2);
-
-        jPanel14.add(jScrollPane2, new org.netbeans.lib.awtextra.AbsoluteConstraints(62, 424, 944, 194));
-
         jLabel27.setBackground(new java.awt.Color(51, 51, 51));
         jLabel27.setFont(new java.awt.Font("Yu Gothic UI Light", 0, 24)); // NOI18N
         jLabel27.setForeground(new java.awt.Color(51, 51, 51));
         jLabel27.setText("Book Details");
-        jPanel14.add(jLabel27, new org.netbeans.lib.awtextra.AbsoluteConstraints(70, 670, -1, -1));
+        jPanel14.add(jLabel27, new org.netbeans.lib.awtextra.AbsoluteConstraints(70, 655, -1, -1));
 
         showPieChart.setBackground(new java.awt.Color(255, 255, 255));
         showPieChart.setLayout(new java.awt.BorderLayout());
@@ -637,38 +711,35 @@ public void showBarChart(){
         jLabel35.setFont(new java.awt.Font("Yu Gothic UI Light", 0, 24)); // NOI18N
         jLabel35.setForeground(new java.awt.Color(51, 51, 51));
         jLabel35.setText("User Details");
-        jPanel14.add(jLabel35, new org.netbeans.lib.awtextra.AbsoluteConstraints(66, 385, -1, -1));
+        jPanel14.add(jLabel35, new org.netbeans.lib.awtextra.AbsoluteConstraints(66, 390, -1, -1));
 
-        rSTableMetro3.setForeground(new java.awt.Color(255, 255, 255));
-        rSTableMetro3.setModel(new javax.swing.table.DefaultTableModel(
+        table_bookdetails.setForeground(new java.awt.Color(255, 255, 255));
+        table_bookdetails.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {"1", "ABC", "BCS", "CSS"},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
+
             },
             new String [] {
                 "Book ID", "Name", "Author", "Quantity"
             }
         ));
-        rSTableMetro3.setColorBackgoundHead(new java.awt.Color(181, 181, 181));
-        rSTableMetro3.setColorBordeFilas(new java.awt.Color(255, 255, 255));
-        rSTableMetro3.setColorBordeHead(new java.awt.Color(181, 181, 181));
-        rSTableMetro3.setColorFilasBackgound2(new java.awt.Color(225, 225, 225));
-        rSTableMetro3.setColorFilasForeground1(new java.awt.Color(51, 51, 51));
-        rSTableMetro3.setColorFilasForeground2(new java.awt.Color(255, 255, 255));
-        rSTableMetro3.setColorSelBackgound(new java.awt.Color(154, 202, 241));
-        rSTableMetro3.setFont(new java.awt.Font("Yu Gothic UI Light", 0, 12)); // NOI18N
-        rSTableMetro3.setFuenteFilas(new java.awt.Font("Yu Gothic UI Semibold", 1, 12)); // NOI18N
-        rSTableMetro3.setFuenteHead(new java.awt.Font("Yu Gothic UI Semibold", 1, 15)); // NOI18N
-        rSTableMetro3.setGridColor(new java.awt.Color(204, 204, 204));
-        rSTableMetro3.setGrosorBordeFilas(0);
-        rSTableMetro3.setGrosorBordeHead(0);
-        rSTableMetro3.setRowHeight(35);
-        rSTableMetro3.setShowGrid(false);
-        jScrollPane3.setViewportView(rSTableMetro3);
+        table_bookdetails.setColorBackgoundHead(new java.awt.Color(181, 181, 181));
+        table_bookdetails.setColorBordeFilas(new java.awt.Color(255, 255, 255));
+        table_bookdetails.setColorBordeHead(new java.awt.Color(181, 181, 181));
+        table_bookdetails.setColorFilasBackgound2(new java.awt.Color(225, 225, 225));
+        table_bookdetails.setColorFilasForeground1(new java.awt.Color(51, 51, 51));
+        table_bookdetails.setColorFilasForeground2(new java.awt.Color(51, 51, 51));
+        table_bookdetails.setColorSelBackgound(new java.awt.Color(154, 202, 241));
+        table_bookdetails.setFont(new java.awt.Font("Yu Gothic UI Light", 0, 12)); // NOI18N
+        table_bookdetails.setFuenteFilas(new java.awt.Font("Yu Gothic UI Semibold", 1, 12)); // NOI18N
+        table_bookdetails.setFuenteHead(new java.awt.Font("Yu Gothic UI Semibold", 1, 15)); // NOI18N
+        table_bookdetails.setGridColor(new java.awt.Color(204, 204, 204));
+        table_bookdetails.setGrosorBordeFilas(0);
+        table_bookdetails.setGrosorBordeHead(0);
+        table_bookdetails.setRowHeight(35);
+        table_bookdetails.setShowGrid(false);
+        jScrollPane3.setViewportView(table_bookdetails);
 
-        jPanel14.add(jScrollPane3, new org.netbeans.lib.awtextra.AbsoluteConstraints(64, 710, 944, 194));
+        jPanel14.add(jScrollPane3, new org.netbeans.lib.awtextra.AbsoluteConstraints(64, 698, 944, 206));
 
         jLabel36.setBackground(new java.awt.Color(102, 102, 102));
         jLabel36.setFont(new java.awt.Font("Yu Gothic UI Semibold", 0, 19)); // NOI18N
@@ -678,6 +749,36 @@ public void showBarChart(){
         jPanel14.add(jLabel36, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 32, 176, -1));
 
         jPanel4.setBackground(new java.awt.Color(255, 255, 255));
+        jPanel4.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        table_users.setForeground(new java.awt.Color(255, 255, 255));
+        table_users.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+
+            },
+            new String [] {
+                "User ID", "Name", "Location"
+            }
+        ));
+        table_users.setColorBackgoundHead(new java.awt.Color(181, 181, 181));
+        table_users.setColorBordeFilas(new java.awt.Color(255, 255, 255));
+        table_users.setColorBordeHead(new java.awt.Color(181, 181, 181));
+        table_users.setColorFilasBackgound2(new java.awt.Color(225, 225, 225));
+        table_users.setColorFilasForeground1(new java.awt.Color(51, 51, 51));
+        table_users.setColorFilasForeground2(new java.awt.Color(51, 51, 51));
+        table_users.setColorSelBackgound(new java.awt.Color(154, 202, 241));
+        table_users.setFont(new java.awt.Font("Yu Gothic UI Light", 0, 12)); // NOI18N
+        table_users.setFuenteFilas(new java.awt.Font("Yu Gothic UI Semibold", 1, 12)); // NOI18N
+        table_users.setFuenteHead(new java.awt.Font("Yu Gothic UI Semibold", 1, 15)); // NOI18N
+        table_users.setGridColor(new java.awt.Color(204, 204, 204));
+        table_users.setGrosorBordeFilas(0);
+        table_users.setGrosorBordeHead(0);
+        table_users.setRowHeight(35);
+        table_users.setShowGrid(false);
+        jScrollPane2.setViewportView(table_users);
+
+        jPanel4.add(jScrollPane2, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 54, 944, 200));
+
         jPanel14.add(jPanel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(42, 380, 984, 544));
 
         jPanel18.setBackground(new java.awt.Color(255, 255, 255));
@@ -772,6 +873,28 @@ public void showBarChart(){
     private void jPanel9MouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jPanel9MouseExited
         jPanel9.setBackground(mouseExitColor);
     }//GEN-LAST:event_jPanel9MouseExited
+
+    private void jPanel10MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jPanel10MouseClicked
+        Records records = new Records();
+        records.setVisible(true);
+        dispose();
+    }//GEN-LAST:event_jPanel10MouseClicked
+
+    private void jPanel10MouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jPanel10MouseEntered
+        jPanel10.setBackground(mouseEnterColor);
+    }//GEN-LAST:event_jPanel10MouseEntered
+
+    private void jPanel10MouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jPanel10MouseExited
+        jPanel10.setBackground(mouseExitColor);
+    }//GEN-LAST:event_jPanel10MouseExited
+
+    private void jPanel13MouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jPanel13MouseEntered
+        jPanel13.setBackground(mouseEnterColor);
+    }//GEN-LAST:event_jPanel13MouseEntered
+
+    private void jPanel13MouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jPanel13MouseExited
+        jPanel13.setBackground(mouseExitColor);
+    }//GEN-LAST:event_jPanel13MouseExited
   
     
     
@@ -793,27 +916,20 @@ public void showBarChart(){
     private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel12;
     private javax.swing.JLabel jLabel13;
-    private javax.swing.JLabel jLabel14;
-    private javax.swing.JLabel jLabel15;
     private javax.swing.JLabel jLabel16;
     private javax.swing.JLabel jLabel17;
     private javax.swing.JLabel jLabel18;
-    private javax.swing.JLabel jLabel19;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel20;
     private javax.swing.JLabel jLabel21;
-    private javax.swing.JLabel jLabel22;
     private javax.swing.JLabel jLabel23;
     private javax.swing.JLabel jLabel24;
-    private javax.swing.JLabel jLabel25;
     private javax.swing.JLabel jLabel26;
     private javax.swing.JLabel jLabel27;
     private javax.swing.JLabel jLabel28;
     private javax.swing.JLabel jLabel29;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel30;
-    private javax.swing.JLabel jLabel31;
-    private javax.swing.JLabel jLabel32;
     private javax.swing.JLabel jLabel33;
     private javax.swing.JLabel jLabel34;
     private javax.swing.JLabel jLabel35;
@@ -826,8 +942,6 @@ public void showBarChart(){
     private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel10;
-    private javax.swing.JPanel jPanel11;
-    private javax.swing.JPanel jPanel12;
     private javax.swing.JPanel jPanel13;
     private javax.swing.JPanel jPanel14;
     private javax.swing.JPanel jPanel15;
@@ -844,9 +958,12 @@ public void showBarChart(){
     private javax.swing.JPanel jPanel9;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
+    private javax.swing.JLabel lbl_issuedbooks;
+    private javax.swing.JLabel lbl_numberofbooks;
+    private javax.swing.JLabel lbl_numberofusers;
     private javax.swing.JPanel panelLegend;
-    private rojerusan.RSTableMetro rSTableMetro2;
-    private rojerusan.RSTableMetro rSTableMetro3;
     private javax.swing.JPanel showPieChart;
+    private rojerusan.RSTableMetro table_bookdetails;
+    private rojerusan.RSTableMetro table_users;
     // End of variables declaration//GEN-END:variables
 }
