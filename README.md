@@ -7,19 +7,19 @@ Built to handle the day-to-day of running a small library: tracking inventory, m
 
 ## Screenshots
 
-Sign up page
+*Sign up page*
 <img width="1514" height="825" alt="image" src="https://github.com/user-attachments/assets/2b91a708-4a4a-4f13-8bd9-5e5a17eaffe5" />
 
-Dashboard: live user/book/loan counts and a ring chart breaking down loan status
+*Dashboard — live user/book/loan counts and a ring chart breaking down loan status*
 <img width="1903" height="1021" alt="image" src="https://github.com/user-attachments/assets/f99b5625-2036-47dd-aa84-f273f44b1e34" />
 
-Books Management: full CRUD with click-to-edit table rows
+*Books Management — full CRUD with click-to-edit table rows*
 <img width="1901" height="1019" alt="image" src="https://github.com/user-attachments/assets/f575bec3-32dd-4525-8a6d-99b449f25059" />
 
-Issue Book: looks up a book and a user by ID, validates before creating the loan
+*Issue Book — looks up a book and a user by ID, validates before creating the loan*
 <img width="1899" height="1017" alt="image" src="https://github.com/user-attachments/assets/225b45be-6111-4c35-91a6-7c6ed60b446b" />
 
-Records: full loan history with one-click status filtering and automatic overdue detection
+*Records — full loan history with one-click status filtering and automatic overdue detection*
 <img width="1902" height="1021" alt="image" src="https://github.com/user-attachments/assets/a762b753-c698-4648-b190-5b254ea01e45" />
 
 
