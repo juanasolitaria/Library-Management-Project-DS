@@ -1,12 +1,24 @@
 # Library Management System
 
-A desktop admin panel for managing a library's books, members, and loans — built with Java Swing and MySQL.
+A desktop admin panel for managing a library's books, members, and loans.
+Built with Java  and MySQL.
 
 Handles the day-to-day of running a small library: tracking inventory, managing borrower records, issuing/returning books, and a dashboard with live stats and an interactive chart.
 
 ## Screenshots
 
 <img width="1514" height="825" alt="image" src="https://github.com/user-attachments/assets/2b91a708-4a4a-4f13-8bd9-5e5a17eaffe5" />
+
+<img width="1903" height="1021" alt="image" src="https://github.com/user-attachments/assets/f99b5625-2036-47dd-aa84-f273f44b1e34" />
+
+<img width="1901" height="1019" alt="image" src="https://github.com/user-attachments/assets/f575bec3-32dd-4525-8a6d-99b449f25059" />
+
+<img width="1902" height="1021" alt="image" src="https://github.com/user-attachments/assets/1a155d01-3571-4dd4-a73d-b90b20a3d0ff" />
+
+<img width="1899" height="1017" alt="image" src="https://github.com/user-attachments/assets/225b45be-6111-4c35-91a6-7c6ed60b446b" />
+
+<img width="1902" height="1021" alt="image" src="https://github.com/user-attachments/assets/a762b753-c698-4648-b190-5b254ea01e45" />
+
 
 ## Features
 
@@ -18,7 +30,7 @@ Handles the day-to-day of running a small library: tracking inventory, managing 
 
 ## Tech Stack
 
-Java (Swing) · MySQL · JFreeChart · NetBeans 
+Java (Swing) · MySQL · NetBeans 
 
 ---
 
