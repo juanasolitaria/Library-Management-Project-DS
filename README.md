@@ -10,35 +10,35 @@ Built to handle the day-to-day of running a small library: tracking inventory, m
 *Sign up page*
 <img width="1514" height="825" alt="image" src="https://github.com/user-attachments/assets/2b91a708-4a4a-4f13-8bd9-5e5a17eaffe5" />
 
-*Dashboard — live user/book/loan counts and a ring chart breaking down loan status*
+*Dashboard: live user/book/loan counts and a ring chart breaking down loan status*
 <img width="1903" height="1021" alt="image" src="https://github.com/user-attachments/assets/f99b5625-2036-47dd-aa84-f273f44b1e34" />
 
-*Books Management — full CRUD with click-to-edit table rows*
+*Books Management: full CRUD with click-to-edit table rows*
 <img width="1901" height="1019" alt="image" src="https://github.com/user-attachments/assets/f575bec3-32dd-4525-8a6d-99b449f25059" />
 
-*Issue Book — looks up a book and a user by ID, validates before creating the loan*
+*Issue Book: looks up a book and a user by ID, validates before creating the loan*
 <img width="1899" height="1017" alt="image" src="https://github.com/user-attachments/assets/225b45be-6111-4c35-91a6-7c6ed60b446b" />
 
-*Records — full loan history with one-click status filtering and automatic overdue detection*
+*Records: full loan history with one-click status filtering and automatic overdue detection*
 <img width="1902" height="1021" alt="image" src="https://github.com/user-attachments/assets/a762b753-c698-4648-b190-5b254ea01e45" />
 
 
 ## Features
 
-- **Auth** — Sign up and login backed by MySQL, with duplicate-username detection on signup and credential validation on login. Empty or invalid fields are caught before hitting the database.
-- **Dashboard** — Three live stat cards (users, books, active loans), scrollable tables of all users and books, and a ring chart showing the percentage of loans that are pending, returned, or overdue.
+- **Auth**: Sign up and login backed by MySQL, with duplicate-username detection on signup and credential validation on login. Empty or invalid fields are caught before hitting the database.
+- **Dashboard**: Three live stat cards (users, books, active loans), scrollable tables of all users and books, and a ring chart showing the percentage of loans that are pending, returned, or overdue.
 - **Books & User Management** — Full CRUD for the catalog and the member list; clicking a row auto-fills the form for editing.
-- **Issue Book** — Looks up a book and a user by ID, blocks the loan if either isn't found or if that user already has that book out, then creates the loan and decrements stock.
-- **Return Book** — Looks up the active loan by book + user ID, marks it returned, and restores stock.
-- **Records** — Searchable loan history by date range, plus a one-click filter (Pending / Returned / Overdue) 
+- **Issue Book**: Looks up a book and a user by ID, blocks the loan if either isn't found or if that user already has that book out, then creates the loan and decrements stock.
+- **Return Book**: Looks up the active loan by book + user ID, marks it returned, and restores stock.
+- **Records**: Searchable loan history by date range, plus a one-click filter (Pending / Returned / Overdue) 
 
 ## Technical Highlights
 
-- **Strict Input Handling** — Every form validates input and reports specific errors before touching the database. No silent failures or blank screens.
-- **Real-Time Analytics** — The dashboard and pie chart pull live counts straight from MySQL on every page load instead of using hardcoded placeholder data.
-- **Dynamic Calculation** — Overdue status is calculated on the fly by comparing `due_date` against the current date — no extra column or manual status updates needed.
-- **Instant UI Synchronization** — All CRUD operations (Books, Users, Issue/Return) write directly to MySQL through JDBC and refresh the UI immediately after each change.
-- **Custom Design** — Custom UI built from scratch with Netbeans. Every screen, color, and layout decision was designed manually.
+- **Strict Input Handling**: Every form validates input and reports specific errors before touching the database. No silent failures or blank screens.
+- **Real-Time Analytics**: The dashboard and pie chart pull live counts straight from MySQL on every page load instead of using hardcoded placeholder data.
+- **Dynamic Calculation**: Overdue status is calculated on the fly by comparing `due_date` against the current date — no extra column or manual status updates needed.
+- **Instant UI Synchronization**: All CRUD operations (Books, Users, Issue/Return) write directly to MySQL through JDBC and refresh the UI immediately after each change.
+- **Custom Design**: Custom UI built from scratch with Netbeans. Every screen, color, and layout decision was designed manually.
 
 ## Tech Stack
 
