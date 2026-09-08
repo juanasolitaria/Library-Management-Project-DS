@@ -24,7 +24,7 @@ Built to handle the day-to-day of running a small library: tracking inventory, m
 
 ## GIF
 
-![demo](Library%20Manager%20GIF.gif)
+![demo](LibraryManager.gif)
 
 ## Features
 
