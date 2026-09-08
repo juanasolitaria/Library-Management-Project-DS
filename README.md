@@ -5,6 +5,10 @@ Built with Java  and MySQL.
 
 Built to handle the day-to-day of running a small library: tracking inventory, managing borrower records, issuing/returning books, and a dashboard with live stats and an interactive chart.
 
+## GIF
+
+![demo](LibraryManager.gif)
+
 ## Screenshots
 
 *Sign up page*
@@ -21,10 +25,6 @@ Built to handle the day-to-day of running a small library: tracking inventory, m
 
 *Records: full loan history with one-click status filtering and automatic overdue detection*
 <img width="1904" height="1022" alt="image" src="https://github.com/user-attachments/assets/caeb9507-a0d8-488e-95bf-931e4cf22809" />
-
-## GIF
-
-![demo](LibraryManager.gif)
 
 ## Features
 
